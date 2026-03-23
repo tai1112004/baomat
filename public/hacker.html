@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hacker Terminal - Attack E2EE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            background-color: #050505;
+            color: #00ff00;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #00ff00;
+            text-transform: uppercase;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 10px;
+        }
+
+        .nav button {
+            background: #111;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .nav button:hover,
+        .nav button.active {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .panel {
+            display: none;
+            padding: 20px;
+            border: 1px solid #333;
+            background: #0a0a0a;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+
+        th,
+        td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            color: #fff;
+            background: #111;
+        }
+
+        .highlight-red {
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        .highlight-yellow {
+            color: #ffff00;
+        }
+
+        .btn {
+            background: #330000;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #ff0000;
+            color: #fff;
+        }
+
+        .part-mac {
+            color: #ff00ff;
+            word-wrap: break-word;
+        }
+
+        .part-iv {
+            color: #00ffff;
+            word-wrap: break-word;
+        }
+
+        .part-cipher {
+            color: #00ff00;
+            word-wrap: break-word;
+        }
+
+        .desc {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #220000;
+            border: 1px solid #ff0000;
+            padding: 15px;
+            display: none;
+            color: #ff0000;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>[HACKER TERMINAL] - Exploiting E2EE</h1>
+    <div class="desc">Chế độ này dành cho giảng viên/người thuyết trình để minh họa sức mạnh của End-to-End Encryption
+        chặn đứng các kịch bản tấn công thực tế.</div>
+
+    <div class="nav">
+        <button class="active" onclick="switchTab('mitm')">1. Man-in-the-Middle (Network Sniffing)</button>
+        <button onclick="switchTab('server')">2. Server Compromise (DB Breach)</button>
+    </div>
+
+    <!-- TAB 1: MITM -->
+    <div id="tab-mitm" class="panel active">
+        <h2>📡 Network Sniffer (Chặn bắt gói tin trên đường truyền)</h2>
+        <div class="desc">
+            Hacker ngồi ở giữa Router và thu thập mọi gói tin chat đang gửi đi. <br>
+            Dù Hacker có toàn quyền bắt gói, nhưng do E2EE, hacker chỉ thấy những mớ hỗn độn (IV, Ciphertext, MAC) và
+            không thể hiểu nghĩa.<br>
+            <i>* Cột plaintext được hiển thị bí mật ở đây để đối chiếu. Hacker thực tế KHÔNG thấy.</i>
+        </div>
+
+        <button class="btn" onclick="fetchSniffer()" style="background:#003300; border-color:#00ff00; color:#00ff00">Cập
+            nhật Gói tin (Sniff)</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="50">ID</th>
+                    <th width="120">From ➔ To</th>
+                    <th width="400">Raw Packet (Hacker thấy mớ này)</th>
+                    <th width="200">Plaintext (Hacker KO THẾ thấy)</th>
+                    <th>Action (Tiêm nhiễm)</th>
+                </tr>
+            </thead>
+            <tbody id="snifferBody">
+                <tr>
+                    <td colspan="5" style="text-align:center">Waiting for packets...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TAB 2: SERVER COMPROMISE -->
+    <div id="tab-server" class="panel">
+        <h2>🗄️ Database Breach (Hack vào máy chủ lưu trữ)</h2>
+        <div class="desc">
+            Giải sử Hacker (hoặc admin xấu) truy cập thẳng vào MySQL Database của Server.<br>
+            Họ tải về toàn bộ bảng `secure_chat` và cố dùng mã nguồn Server (có chứa Server DB Key AES_KEY mặc định) để
+            giải mã.
+            <br>Kết quả: Server KHÔNG CÓ KHÓA E2EE của Client nên giải mã thất bại hoàn toàn.
+        </div>
+
+        <div style="background:#000; padding:10px; border:1px solid #333; margin-bottom:15px">
+            > SELECT id, sender, encrypted_msg FROM secure_chat; <br>
+            <span class="highlight-yellow"># Executing query... Success! </span>
+        </div>
+
+        <button class="btn" style="background:#003300; border-color:#00ff00; color:#00ff00" onclick="fetchBreach()">[Tải
+            CSDL Chat]</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sender</th>
+                    <th width="350">DB Ciphertext</th>
+                    <th>Hacker thử giải mã bằng Server Key</th>
+                </tr>
+            </thead>
+            <tbody id="breachBody">
+                <tr>
+                    <td colspan="4" style="text-align:center">Nhấn [Tải CSDL Chat] để xem...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        function switchTab(id) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav button').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            event.target.classList.add('active');
+            if (id === 'mitm') fetchSniffer();
+            if (id === 'server') fetchBreach();
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerHTML = '⚠ ' + msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 4000);
+        }
+
+        function parsePacket(hexBody) {
+            if (!hexBody || hexBody.length < 72) return { mac: '', iv: '', cipher: hexBody };
+            return {
+                mac: hexBody.substring(0, 40),
+                iv: hexBody.substring(40, 72),
+                cipher: hexBody.substring(72)
+            };
+        }
+
+        async function fetchSniffer() {
+            try {
+                const res = await fetch('/api/chat?role=Admin'); // Admin can view all
+                const d = await res.json();
+                const body = document.getElementById('snifferBody');
+
+                if (!d.ok || d.data.length === 0) {
+                    body.innerHTML = '<tr><td colspan="5" style="text-align:center">No packets passing through the network...</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = d.data.map(m => {
+                    const parsed = parsePacket(m.encrypted_msg);
+                    return `
+            <tr>
+              <td>[PKT_0${m.id}]</td>
+              <td><span class="highlight-yellow">${m.sender}</span> ➔ <span class="highlight-yellow">${m.receiver}</span></td>
+              <td style="font-size:10px; line-height:1.4">
+                <span style="color:#aaa">Hacker block:</span><br>
+                HMAC: <span class="part-mac">${parsed.mac}</span><br>
+                IV_16: <span class="part-iv">${parsed.iv}</span><br>
+                Data_AES: <span class="part-cipher">${parsed.cipher}</span>
+              </td>
+              <td><span style="color:#aaa;font-size:11px">Thực tế (hiện cho Demo):</span><br><b style="color:#0f0">${m.demo_plaintext || '---'}</b></td>
+              <td>
+                <button class="btn" onclick="tamperPacket(${m.id})">🔪 Giả mạo gói (Alter Cipher)</button>
+              </td>
+            </tr>
+          `;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function tamperPacket(id) {
+            if (!confirm('[HACKER ACTION] Can thiệp đường truyền và lén đổi 1 byte trong Ciphertext của gói tin này.\nSau đó gửi lại cho nạn nhân... Xác nhận?')) return;
+
+            const r = await fetch('/api/hacker/tamper_chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            const d = await r.json();
+            if (d.ok) {
+                showToast('Đã sửa lén gói tin thành công! Hãy qua màn hình Chat của người dùng để xem cảnh báo Integrity Fail.');
+                fetchSniffer();
+            } else {
+                showToast('Lỗi: ' + d.error);
+            }
+        }
+
+        async function fetchBreach() {
+            try {
+                const res = await fetch('/api/chat?role=Admin');
+                const d = await res.json();
+                const body = document.getElementById('breachBody');
+                if (!d.ok || d.data.length === 0) return;
+
+                body.innerHTML = d.data.map(m => {
+                    return `
+            <tr>
+              <td>${m.id}</td>
+              <td class="highlight-yellow">${m.sender}</td>
+              <td style="font-size:10px">${m.encrypted_msg.substring(0, 60)}...</td>
+              <td id="breach-res-${m.id}">
+                <button class="btn" style="color:#000;background:#aaa;border-color:#fff" onclick="hackDecrypt(${m.id}, '${m.encrypted_msg}')">Run Decrypt (Server AES_KEY)</button>
+              </td>
+            </tr>
+          `;
+                }).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function hackDecrypt(id, hex) {
+            const el = document.getElementById('breach-res-' + id);
+            el.innerHTML = '<span class="highlight-yellow">Brute-forcing / Decrypting...</span>';
+
+            // Server AES_KEY mặc định là 'AESKey_DataMask16', hacker thử xài code của demo!
+            const r = await fetch('/api/demo', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'aes_decrypt', text: hex, key: 'AESKey_DataMask16' })
+            });
+            const d = await r.json();
+
+            let resText = d.data ? d.data.decrypted : 'Error';
+            setTimeout(() => {
+                el.innerHTML = `<span class="highlight-red">[THẤT BẠI]</span><br><span style="font-size:11px;color:#aaa">${resText}</span><br><br><span style="font-size:11px;color:#0ff">Lý do: Client dùng Session Key bí mật chưa bao giờ gửi lên Server.</span>`;
+            }, 1000);
+        }
+
+        // Auto load MitM on start
+        fetchSniffer();
+    </script>
+</body>
+
+</html>

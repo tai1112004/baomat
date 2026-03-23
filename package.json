@@ -1,0 +1,18 @@
+{
+  "name": "data-masking-system",
+  "version": "1.0.0",
+  "description": "Chương trình Quản lý Dữ liệu An toàn bằng Mặt nạ Dữ liệu (Data Masking) - JavaScript/Node.js + MySQL",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "web": "node src/server.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.x"
+  },
+  "dependencies": {
+    "mysql2": "^3.19.0"
+  }
+}
