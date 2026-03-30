@@ -126,7 +126,64 @@ async function initAccountsDB() {
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        try { await conn.query('ALTER TABLE secure_chat ADD COLUMN demo_plaintext TEXT'); } catch (e) { }
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS access_log (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(50),
+                action VARCHAR(50),
+                target_id VARCHAR(50),
+                details TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                full_name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                phone TEXT NOT NULL,
+                cccd TEXT NOT NULL,
+                salary TEXT NOT NULL,
+                birth_date TEXT NOT NULL,
+                address TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS masked_users (
+                id INT PRIMARY KEY,
+                full_name_masked VARCHAR(100),
+                email_static VARCHAR(100),
+                email_xor VARCHAR(200),
+                phone_static VARCHAR(20),
+                phone_fpmasked VARCHAR(20),
+                cccd_token VARCHAR(64),
+                salary_xor VARCHAR(200),
+                birth_date_masked VARCHAR(20),
+                address_masked VARCHAR(200),
+                mask_method VARCHAR(50),
+                masked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS token_map (
+                token VARCHAR(64) PRIMARY KEY,
+                original VARCHAR(500) NOT NULL,
+                field_type VARCHAR(50),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        try {
+            await conn.query(`ALTER TABLE users
+                MODIFY full_name TEXT NOT NULL,
+                MODIFY email TEXT NOT NULL,
+                MODIFY phone TEXT NOT NULL,
+                MODIFY cccd TEXT NOT NULL,
+                MODIFY salary TEXT NOT NULL,
+                MODIFY birth_date TEXT NOT NULL,
+                MODIFY address TEXT NOT NULL`);
+        } catch (e) { }
+
         const h = (pw) => crypto.createHash('sha256').update(pw).digest('hex');
         const users = [
             ['admin', h('admin'), 'Admin'],

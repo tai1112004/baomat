@@ -9,13 +9,13 @@ USE data_masking_db;
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id          INT PRIMARY KEY AUTO_INCREMENT,
-    full_name   VARCHAR(100) NOT NULL,
-    email       VARCHAR(100) NOT NULL,
-    phone       VARCHAR(15)  NOT NULL,
-    cccd        VARCHAR(12)  NOT NULL,
-    salary      DECIMAL(12,2) NOT NULL,
-    birth_date  DATE         NOT NULL,
-    address     VARCHAR(200) NOT NULL,
+    full_name   TEXT NOT NULL,
+    email       TEXT NOT NULL,
+    phone       TEXT NOT NULL,
+    cccd        TEXT NOT NULL,
+    salary      TEXT NOT NULL,
+    birth_date  TEXT NOT NULL,
+    address     TEXT NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

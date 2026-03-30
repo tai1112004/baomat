@@ -361,6 +361,7 @@ function aesKeyExpansion(key16) {
     }
 
     // Chuyển thành 11 round keys, mỗi key 16 bytes
+    
     const roundKeys = [];
     for (let r = 0; r < 11; r++) {
         const rk = [];

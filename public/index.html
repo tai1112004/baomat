@@ -362,6 +362,16 @@
       color: var(--red);
     }
 
+    .row-attacked {
+      animation: attackFlash 1.3s ease;
+      background: rgba(248,81,73,.1);
+    }
+
+    @keyframes attackFlash {
+      from { background: rgba(248,81,73,.25); }
+      to { background: transparent; }
+    }
+
     /* ── MONO (ciphertext) ── */
     .mono {
       font-family: 'JetBrains Mono', monospace;
@@ -1456,8 +1466,12 @@
         document.getElementById('s-users').textContent = d.data.length;
         document.getElementById('userCount').textContent = d.data.length + ' bản ghi';
 
-        body.innerHTML = d.data.map(u => `
-      <tr id="row-${u.id}">
+        body.innerHTML = d.data.map(u => {
+          const attacked = role === 'Admin' && window.recentlyAttackedUserId === u.id
+            ? `<span class="badge badge-red" style="font-size:10px;margin-top:6px">Đã giả mạo</span>`
+            : '';
+          return `
+      <tr id="row-${u.id}" ${window.recentlyAttackedUserId === u.id ? 'class="row-attacked"' : ''}>
         <td><span class="badge badge-blue">${u.id}</span></td>
         <td><strong>${u.full_name}</strong></td>
         <td style="color:var(--blue)">${u.email}</td>
@@ -1470,9 +1484,11 @@
           <div style="display:flex; gap:6px; flex-direction:column">
             ${role === 'Admin' ? `<button class="btn-danger-sm" onclick="deleteUser(${u.id}, '${u.full_name.replace(/'/g, '')}')">🗑️ Xóa</button>` : `<span class="badge badge-purple" style="font-size:10px">Chỉ xem</span>`}
             ${role === 'Admin' ? `<button class="btn-primary-sm" style="background:#cc0000;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;" onclick="simulateAttack(${u.id})">🔪 Lén giả mạo</button>` : ''}
+            ${attacked}
           </div>
         </td>
-      </tr>`).join('');
+      </tr>`;
+        }).join('');
 
         document.getElementById('dbDot').classList.remove('red');
         document.getElementById('dbStatus').textContent = 'Đã kết nối — data_masking_db';
@@ -1631,9 +1647,14 @@
         });
         const d = await r.json();
         if (d.ok) {
+          window.recentlyAttackedUserId = id;
           showToast(d.message, '🔪');
           loadUsers(); // Load lại để trigger HMAC error
           if (typeof loadLogs === 'function') setTimeout(loadLogs, 500);
+          setTimeout(() => {
+            window.recentlyAttackedUserId = null;
+            loadUsers();
+          }, 8000);
         } else {
           showToast(d.error, '✗', true);
         }
