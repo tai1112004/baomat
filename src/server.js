@@ -6,6 +6,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 const { MySQLConnection } = require('./mysql_connector');
 const DB_CONFIG = require('../config/database');
@@ -15,6 +16,8 @@ const PORT = 3000;
 const XOR_KEY = 'DataMask@SecretKey#2024!VietNam';
 const AES_KEY = 'AESKey_DataMask16';
 const DB_KEY = 'AES_DB_SECRET_KEY!'; // Khoá cấp cơ sở dữ liệu (tầng 1)
+const JWT_SECRET = 'JWTSecret_DataMasking_VietNam2026!';
+const JWT_EXPIRY = '30m';
 
 // ============================================================
 // HELPER: Giải mã 1 user (vì DB lưu AES-128 hex string)
@@ -103,26 +106,23 @@ async function writeLog(conn, username, action, target_id, details) {
     } catch (e) { console.error("Audit log error:", e); }
 }
 
-const sessions = new Map();
-const SESSION_DURATION_MS = 1000 * 60 * 30; // 30 phút
+function getTokenFromReq(req) {
+    const authHeader = req.headers['authorization'];
+    return req.headers['x-auth-token'] || (authHeader && authHeader.replace(/^Bearer\s+/i, '')) || null;
+}
 
 function createSession(username, role) {
-    const token = crypto.randomBytes(24).toString('hex');
-    sessions.set(token, { username, role, createdAt: Date.now() });
-    return token;
+    return jwt.sign({ username, role }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
 }
 
 function getSession(req) {
-    const authHeader = req.headers['authorization'];
-    const token = req.headers['x-auth-token'] || (authHeader && authHeader.replace(/^Bearer\s+/i, ''));
+    const token = getTokenFromReq(req);
     if (!token) return null;
-    const session = sessions.get(token);
-    if (!session) return null;
-    if (Date.now() - session.createdAt > SESSION_DURATION_MS) {
-        sessions.delete(token);
+    try {
+        return jwt.verify(token, JWT_SECRET);
+    } catch (e) {
         return null;
     }
-    return session;
 }
 
 function requireSession(req, res) {

@@ -13,6 +13,7 @@
     "node": ">=14.x"
   },
   "dependencies": {
+    "jsonwebtoken": "^8.5.1",
     "mysql2": "^3.19.0"
   }
 }
