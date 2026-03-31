@@ -103,6 +103,57 @@ async function writeLog(conn, username, action, target_id, details) {
     } catch (e) { console.error("Audit log error:", e); }
 }
 
+const sessions = new Map();
+const SESSION_DURATION_MS = 1000 * 60 * 30; // 30 phút
+
+function createSession(username, role) {
+    const token = crypto.randomBytes(24).toString('hex');
+    sessions.set(token, { username, role, createdAt: Date.now() });
+    return token;
+}
+
+function getSession(req) {
+    const authHeader = req.headers['authorization'];
+    const token = req.headers['x-auth-token'] || (authHeader && authHeader.replace(/^Bearer\s+/i, ''));
+    if (!token) return null;
+    const session = sessions.get(token);
+    if (!session) return null;
+    if (Date.now() - session.createdAt > SESSION_DURATION_MS) {
+        sessions.delete(token);
+        return null;
+    }
+    return session;
+}
+
+function requireSession(req, res) {
+    const session = getSession(req);
+    if (!session) {
+        sendJSON(res, 401, { ok: false, error: 'Unauthorized: Thiếu phiên đăng nhập hoặc phiên hết hạn' });
+        return null;
+    }
+    return session;
+}
+
+function requireAdmin(req, res) {
+    const session = requireSession(req, res);
+    if (!session) return null;
+    if (session.role !== 'Admin') {
+        sendJSON(res, 403, { ok: false, error: 'Forbidden: chỉ Admin mới được truy cập' });
+        return null;
+    }
+    return session;
+}
+
+function requireRole(req, res, allowedRoles) {
+    const session = requireSession(req, res);
+    if (!session) return null;
+    if (!allowedRoles.includes(session.role)) {
+        sendJSON(res, 403, { ok: false, error: `Forbidden: chỉ ${allowedRoles.join(' hoặc ')} mới được truy cập` });
+        return null;
+    }
+    return session;
+}
+
 // ============================================================
 // SYSTEM: Init DB Accounts
 // ============================================================
@@ -146,6 +197,7 @@ async function initAccountsDB() {
                 salary TEXT NOT NULL,
                 birth_date TEXT NOT NULL,
                 address TEXT NOT NULL,
+                owner_username VARCHAR(50) NULL DEFAULT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
@@ -182,6 +234,10 @@ async function initAccountsDB() {
                 MODIFY salary TEXT NOT NULL,
                 MODIFY birth_date TEXT NOT NULL,
                 MODIFY address TEXT NOT NULL`);
+            const cols = await conn.queryRows("SHOW COLUMNS FROM users LIKE 'owner_username'");
+            if (cols.length === 0) {
+                await conn.query(`ALTER TABLE users ADD COLUMN owner_username VARCHAR(50) NULL DEFAULT NULL`);
+            }
         } catch (e) { }
 
         const h = (pw) => crypto.createHash('sha256').update(pw).digest('hex');
@@ -197,7 +253,9 @@ async function initAccountsDB() {
 }
 
 // GET /api/logs - Đọc audit log
-async function handleGetLogs(res) {
+async function handleGetLogs(req, res) {
+    const session = requireAdmin(req, res);
+    if (!session) return;
     try {
         const logs = await withDB(conn => conn.queryRows('SELECT * FROM access_log ORDER BY timestamp DESC LIMIT 100'));
         sendJSON(res, 200, { ok: true, data: logs });
@@ -213,16 +271,25 @@ async function handleGetLogs(res) {
 // GET /api/users - Dữ liệu gốc
 async function handleGetUsers(req, res) {
     try {
-        const urlObj = new URL(req.url, 'http://localhost');
-        const role = urlObj.searchParams.get('role') || 'Admin';
+        const session = requireSession(req, res);
+        if (!session) return;
+
+        const { username, role } = session;
+        const normalizedRole = (role || '').toString().trim().toLowerCase();
+        if (normalizedRole === 'khách hàng') {
+            const usersRaw = await withDB(conn => conn.queryRows(`SELECT * FROM users WHERE owner_username = ${conn.escape(username)} ORDER BY id`));
+            const custData = usersRaw.map(decryptUser);
+            await withDB(conn => writeLog(conn, username, 'VIEW_OWN_DATA', username, `Khách hàng ${username} xem dữ liệu của chính mình`));
+            sendJSON(res, 200, { ok: true, data: custData });
+            return;
+        }
 
         const usersRaw = await withDB(async (conn) => {
-            await writeLog(conn, role, 'VIEW_RAW_DATA', 'ALL', `User role ${role} accessed user data`);
+            await writeLog(conn, username, 'VIEW_RAW_DATA', 'ALL', `User ${username} with role ${role} accessed user data`);
             return conn.queryRows('SELECT * FROM users ORDER BY id');
         });
         const users = usersRaw.map(decryptUser);
 
-        // MASKING THEO VAI TRÒ (Role-based)
         if (role === 'Nhân viên') {
             const empData = users.map(u => ({
                 id: u.id,
@@ -237,15 +304,12 @@ async function handleGetUsers(req, res) {
             }));
             sendJSON(res, 200, { ok: true, data: empData });
             return;
-        } else if (role === 'Khách hàng') {
-            // Giả lập Khách hàng chỉ được xem dữ liệu chính mình (ID = 1)
-            const custData = users.filter(u => u.id === 1);
-            if (custData.length === 0 && users.length > 0) custData.push(users[0]); // Fallback record đầu tiên
-            sendJSON(res, 200, { ok: true, data: custData });
-            return;
         }
 
-        // Admin
+        if (role !== 'Admin') {
+            return sendJSON(res, 403, { ok: false, error: 'Forbidden: role không được phép truy cập' });
+        }
+
         sendJSON(res, 200, { ok: true, data: users });
     } catch (e) {
         sendJSON(res, 500, { ok: false, error: e.message });
@@ -253,7 +317,12 @@ async function handleGetUsers(req, res) {
 }
 
 // GET /api/masked - Dữ liệu đã mask
-async function handleGetMasked(res) {
+async function handleGetMasked(req, res) {
+    const session = requireSession(req, res);
+    if (!session) return;
+    if (session.role === 'Khách hàng') {
+        return sendJSON(res, 403, { ok: false, error: 'Forbidden: Khách hàng không được truy cập dữ liệu đã mask của toàn bộ hệ thống' });
+    }
     try {
         const masked = await withDB(conn =>
             conn.queryRows('SELECT * FROM masked_users ORDER BY id')
@@ -273,6 +342,13 @@ async function handleAddUser(req, res) {
             return sendJSON(res, 400, { ok: false, error: 'Vui lòng điền đầy đủ tất cả các trường!' });
         }
 
+        const session = requireSession(req, res);
+        if (!session) return;
+        const normalizedRole = (session.role || '').toString().trim().toLowerCase();
+        if (!['admin', 'nhân viên', 'khách hàng'].includes(normalizedRole)) {
+            return sendJSON(res, 403, { ok: false, error: 'Forbidden: role không được phép thêm dữ liệu' });
+        }
+
         // MÃ HÓA AES-128 TẦNG DATABASE
         const eName = masking.aesEncrypt(full_name, DB_KEY);
         const eEmail = masking.aesEncrypt(email, DB_KEY);
@@ -281,13 +357,14 @@ async function handleAddUser(req, res) {
         const eSalary = masking.aesEncrypt(String(salary), DB_KEY);
         const eBirth = masking.aesEncrypt(String(birth_date), DB_KEY);
         const eAddress = masking.aesEncrypt(address, DB_KEY);
+        const owner = session.username;
 
         await withDB(async (conn) => {
-            const sql = `INSERT INTO users (full_name, email, phone, cccd, salary, birth_date, address)
+            const sql = `INSERT INTO users (full_name, email, phone, cccd, salary, birth_date, address, owner_username)
                 VALUES (${conn.escape(eName)}, ${conn.escape(eEmail)}, ${conn.escape(ePhone)},
-                        ${conn.escape(eCccd)}, ${conn.escape(eSalary)}, ${conn.escape(eBirth)}, ${conn.escape(eAddress)})`;
+                        ${conn.escape(eCccd)}, ${conn.escape(eSalary)}, ${conn.escape(eBirth)}, ${conn.escape(eAddress)}, ${conn.escape(owner)})`;
             const dbRes = await conn.query(sql);
-            await writeLog(conn, 'Admin', 'ADD_USER', dbRes.insertId, `Added new user: ${full_name}`);
+            await writeLog(conn, session.username, 'ADD_USER', dbRes.insertId, `Added new user: ${full_name} (owner=${owner})`);
         });
         sendJSON(res, 200, { ok: true, message: `Đã thêm người dùng "${full_name}" thành công!` });
     } catch (e) {
@@ -297,13 +374,16 @@ async function handleAddUser(req, res) {
 
 // POST /api/users/delete - Xóa user
 async function handleDeleteUser(req, res) {
+    const session = requireAdmin(req, res);
+    if (!session) return;
+
     const body = await readBody(req);
     try {
         const { id } = JSON.parse(body);
         if (!id) return sendJSON(res, 400, { ok: false, error: 'Thiếu ID!' });
         await withDB(async (conn) => {
             await conn.query(`DELETE FROM users WHERE id = ${conn.escape(id)}`);
-            await writeLog(conn, 'Admin', 'DELETE_USER', id, `Deleted user ID=${id}`);
+            await writeLog(conn, session.username, 'DELETE_USER', id, `Deleted user ID=${id}`);
         });
         sendJSON(res, 200, { ok: true, message: `Đã xóa user ID=${id}` });
     } catch (e) {
@@ -312,7 +392,9 @@ async function handleDeleteUser(req, res) {
 }
 
 // GET /api/stats - Thống kê tổng quan
-async function handleStats(res) {
+async function handleStats(req, res) {
+    const session = requireAdmin(req, res);
+    if (!session) return;
     try {
         const stats = await withDB(async (conn) => {
             const [users] = await conn.queryRows('SELECT COUNT(*) as cnt FROM users');
@@ -364,7 +446,9 @@ async function handleStats(res) {
 }
 
 // POST /api/mask - Chạy masking toàn bộ users
-async function handleRunMask(res) {
+async function handleRunMask(req, res) {
+    const session = requireRole(req, res, ['Nhân viên', 'Admin']);
+    if (!session) return;
     try {
         const result = await withDB(async (conn) => {
             const usersRaw = await conn.queryRows('SELECT * FROM users ORDER BY id');
@@ -434,6 +518,15 @@ async function handleRunMask(res) {
 async function handleDecrypt(req, res) {
     const body = await readBody(req);
     try {
+        const session = getSession(req);
+        if (!session) {
+            return sendJSON(res, 401, { ok: false, error: 'Unauthorized: Thiếu phiên đăng nhập hoặc phiên hết hạn' });
+        }
+        const { username, role } = session;
+        if (role !== 'Admin') {
+            return sendJSON(res, 403, { ok: false, error: 'Forbidden: chỉ Admin mới được giải mã dữ liệu' });
+        }
+
         const { email_xor, salary_aes, cccd_token, id } = JSON.parse(body);
         const result = {};
         if (email_xor) result.email = masking.xorDecrypt(email_xor, XOR_KEY);
@@ -444,7 +537,7 @@ async function handleDecrypt(req, res) {
                 const orig = await conn.queryRows(`SELECT original FROM token_map WHERE token = ${conn.escape(cccd_token)}`);
                 result.cccd = orig.length > 0 ? orig[0].original : '(không tìm thấy)';
             }
-            await writeLog(conn, 'Admin', 'DECRYPT', id || 'UNKNOWN', 'Giải mã thông tin nhạy cảm (Email, Lương, CCCD)');
+            await writeLog(conn, username, 'DECRYPT', id || 'UNKNOWN', 'Giải mã thông tin nhạy cảm (Email, Lương, CCCD)');
         });
 
         sendJSON(res, 200, { ok: true, data: result });
@@ -493,6 +586,9 @@ async function handleDemo(req, res) {
 
 // POST /api/attack - Giả mạo dữ liệu trong DB để test HMAC
 async function handleAttack(req, res) {
+    const session = requireAdmin(req, res);
+    if (!session) return;
+
     const body = await readBody(req);
     try {
         const { id } = JSON.parse(body);
@@ -551,9 +647,9 @@ async function handleTamperChat(req, res) {
 // GET /api/chat - Lấy danh sách tin nhắn chat
 async function handleGetChat(req, res) {
     try {
-        const urlObj = new URL(req.url, 'http://localhost');
-        const role = urlObj.searchParams.get('role') || 'Admin';
-        const username = urlObj.searchParams.get('username') || 'admin';
+        const session = requireSession(req, res);
+        if (!session) return;
+        const { username, role } = session;
 
         const msgs = await withDB(conn => {
             if (role === 'Admin') {
@@ -570,11 +666,17 @@ async function handleGetChat(req, res) {
 
 // POST /api/chat - Gửi tin nhắn mới (Ciphertext)
 async function handlePostChat(req, res) {
+    const session = requireSession(req, res);
+    if (!session) return;
+
     const body = await readBody(req);
     try {
         const { sender, receiver, encrypted_msg, demo_plaintext } = JSON.parse(body);
         if (!sender || !receiver || !encrypted_msg) {
             return sendJSON(res, 400, { ok: false, error: 'Thiếu thông tin người gửi/nhận/mã hoá' });
+        }
+        if (sender !== session.username) {
+            return sendJSON(res, 403, { ok: false, error: 'Forbidden: sender phải khớp với phiên đăng nhập' });
         }
         await withDB(async (conn) => {
             const dp = demo_plaintext ? conn.escape(demo_plaintext) : 'NULL';
@@ -602,8 +704,9 @@ async function handleLogin(req, res) {
             const rows = await conn.queryRows(`SELECT role FROM accounts WHERE username = ${conn.escape(username)} AND password_hash = ${conn.escape(h)}`);
             if (rows.length > 0) {
                 const role = rows[0].role;
+                const token = createSession(username, role);
                 await writeLog(conn, username, 'LOGIN', 'SYSTEM', `Đăng nhập thành công với vai trò ${role}`);
-                sendJSON(res, 200, { ok: true, role: role, username: username });
+                sendJSON(res, 200, { ok: true, role: role, username: username, token });
             } else {
                 await writeLog(conn, username, 'LOGIN_FAIL', 'SYSTEM', `Đăng nhập thất bại (Sai MK)`);
                 sendJSON(res, 401, { ok: false, error: 'Sai tài khoản hoặc mật khẩu!' });
@@ -617,7 +720,7 @@ async function handleLogin(req, res) {
 async function handleRegister(req, res) {
     const body = await readBody(req);
     try {
-        const { username, password, role } = JSON.parse(body);
+        const { username, password } = JSON.parse(body);
         if (!username || !password) return sendJSON(res, 400, { ok: false, error: 'Thiếu thông tin' });
 
         await withDB(async (conn) => {
@@ -625,7 +728,7 @@ async function handleRegister(req, res) {
             if (exist.length > 0) return sendJSON(res, 400, { ok: false, error: 'Tài khoản đã tồn tại!' });
 
             const h = crypto.createHash('sha256').update(password).digest('hex');
-            const chosenRole = role || 'Khách hàng';
+            const chosenRole = 'Khách hàng';
             await conn.query(`INSERT INTO accounts (username, password_hash, role) VALUES (${conn.escape(username)}, ${conn.escape(h)}, ${conn.escape(chosenRole)})`);
             await writeLog(conn, username, 'REGISTER', 'SYSTEM', `Đăng ký tài khoản mới với vai trò ${chosenRole}`);
 
@@ -667,12 +770,12 @@ const server = http.createServer(async (req, res) => {
     if (pathOnly === '/api/users' && method === 'GET') { await handleGetUsers(req, res); return; }
     if (pathOnly === '/api/users/add' && method === 'POST') { await handleAddUser(req, res); return; }
     if (pathOnly === '/api/users/delete' && method === 'POST') { await handleDeleteUser(req, res); return; }
-    if (pathOnly === '/api/masked' && method === 'GET') { await handleGetMasked(res); return; } // res is fine here
-    if (pathOnly === '/api/mask' && method === 'POST') { await handleRunMask(res); return; }
+    if (pathOnly === '/api/masked' && method === 'GET') { await handleGetMasked(req, res); return; }
+    if (pathOnly === '/api/mask' && method === 'POST') { await handleRunMask(req, res); return; }
     if (pathOnly === '/api/decrypt' && method === 'POST') { await handleDecrypt(req, res); return; }
     if (pathOnly === '/api/demo' && method === 'POST') { await handleDemo(req, res); return; }
-    if (pathOnly === '/api/stats' && method === 'GET') { await handleStats(res); return; }
-    if (pathOnly === '/api/logs' && method === 'GET') { await handleGetLogs(res); return; }
+    if (pathOnly === '/api/stats' && method === 'GET') { await handleStats(req, res); return; }
+    if (pathOnly === '/api/logs' && method === 'GET') { await handleGetLogs(req, res); return; }
     if (pathOnly === '/api/attack' && method === 'POST') { await handleAttack(req, res); return; }
     if (pathOnly === '/api/hacker/tamper_chat' && method === 'POST') { await handleTamperChat(req, res); return; }
     if (pathOnly === '/api/chat' && method === 'GET') { await handleGetChat(req, res); return; }

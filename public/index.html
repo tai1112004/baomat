@@ -816,12 +816,11 @@
           style="width:100%; border:1px solid var(--border); padding:8px 12px; border-radius:6px; background:var(--bg); color:white;">
       </div>
       <div class="form-group">
-        <label>Chọn Vai Trò (Tự chọn demo)</label>
+        <label>Vai Trò</label>
         <select id="regRole"
-          style="width:100%; border:1px solid var(--border); padding:8px 12px; border-radius:6px; background:var(--bg); color:white;">
-          <option value="Khách hàng">Khách hàng (Chỉ xem bản thân)</option>
-          <option value="Nhân viên">Nhân viên (Xem bị che)</option>
-          <option value="Admin">Admin (Toàn quyền)</option>
+          style="width:100%; border:1px solid var(--border); padding:8px 12px; border-radius:6px; background:var(--bg); color:white;"
+          disabled>
+          <option value="Khách hàng">Khách hàng (Đăng ký mặc định)</option>
         </select>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-top:10px;" onclick="doRegister()">Đăng Ký</button>
@@ -905,12 +904,12 @@
     <div class="tabs">
       <button class="tab active" onclick="switchTab('original')"><span class="tab-icon">📋</span>Dữ liệu Gốc (Role
         Based)</button>
-      <button class="tab" onclick="switchTab('masked')"><span class="tab-icon">🎭</span>Dữ liệu Đã Mask</button>
-      <button class="tab" onclick="switchTab('decrypt')"><span class="tab-icon">🔓</span>Giải Mã</button>
+      <button id="maskedTabBtn" class="tab" onclick="switchTab('masked')"><span class="tab-icon">🎭</span>Dữ liệu Đã Mask</button>
+      <button id="decryptTabBtn" class="tab" onclick="switchTab('decrypt')"><span class="tab-icon">🔓</span>Giải Mã</button>
       <button class="tab" onclick="switchTab('chat')"><span class="tab-icon">💬</span>Secure Chat (E2EE)</button>
       <button class="tab" onclick="switchTab('add')"><span class="tab-icon">➕</span>Thêm Dữ Liệu</button>
-      <button class="tab" onclick="switchTab('stats')"><span class="tab-icon">📊</span>Thống Kê</button>
-      <button class="tab" onclick="switchTab('logs')"><span class="tab-icon">📜</span>Audit Log</button>
+      <button id="statsTabBtn" class="tab" onclick="switchTab('stats')"><span class="tab-icon">📊</span>Thống Kê</button>
+      <button id="logsTabBtn" class="tab" onclick="switchTab('logs')"><span class="tab-icon">📜</span>Audit Log</button>
       <button class="tab" onclick="switchTab('demo')"><span class="tab-icon">⚡</span>Thử Nghiệm</button>
     </div>
 
@@ -1439,6 +1438,15 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
 
+    function authFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        options.headers['x-auth-token'] = token;
+      }
+      return fetch(url, options);
+    }
+
     // ── FORMAT ──
     function fmtSalary(v) {
       if (!v) return '—';
@@ -1454,7 +1462,7 @@
     async function loadUsers() {
       try {
         const role = localStorage.getItem('role') || 'Admin';
-        const r = await fetch('/api/users?role=' + encodeURIComponent(role));
+        const r = await authFetch('/api/users');
         const d = await r.json();
         const body = document.getElementById('bodyUsers');
 
@@ -1500,7 +1508,8 @@
 
     // ── LOAD MASKED ──
     async function loadMasked() {
-      const r = await fetch('/api/masked');
+      const role = localStorage.getItem('role');
+      const r = await authFetch('/api/masked');
       const d = await r.json();
       const body = document.getElementById('bodyMasked');
 
@@ -1529,16 +1538,21 @@
       <td><span class="mono" title="${m.salary_xor}">AES: ${shortMono(m.salary_xor, 20)}</span></td>
       <td><span class="masked-val">${m.birth_date_masked}</span></td>
       <td>
-        <button class="btn btn-secondary btn-sm" onclick='openDecryptModal(${JSON.stringify(m)})'>🔓 Giải mã</button>
+        ${role === 'Admin' ? `<button class="btn btn-secondary btn-sm" onclick='openDecryptModal(${JSON.stringify(m)})'>🔓 Giải mã</button>` : `<span class="badge badge-purple" style="font-size:10px">Chỉ Admin</span>`}
       </td>
     </tr>`).join('');
     }
 
     // ── LOAD DECRYPT TAB ──
     async function loadDecrypt() {
-      const r = await fetch('/api/masked');
-      const d = await r.json();
+      const role = localStorage.getItem('role');
       const container = document.getElementById('decryptList');
+      if (role !== 'Admin') {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">🚫</div><div class="empty-text">Chỉ Admin mới được truy cập tab giải mã.</div></div>`;
+        return;
+      }
+      const r = await authFetch('/api/masked');
+      const d = await r.json();
 
       if (!d.ok || d.data.length === 0) {
         container.innerHTML = `<div class="empty"><div class="empty-icon">🔓</div><div class="empty-text">Chưa có dữ liệu mask</div></div>`;
@@ -1593,7 +1607,7 @@
       resultEl.innerHTML = '';
 
       try {
-        const r = await fetch('/api/users/add', {
+        const r = await authFetch('/api/users/add', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ full_name, email, phone, cccd, salary: parseFloat(salary), birth_date, address })
@@ -1621,7 +1635,7 @@
     // ── DELETE USER ──
     async function deleteUser(id, name) {
       if (!confirm('Xóa nhân viên "' + name + '"?')) return;
-      const r = await fetch('/api/users/delete', {
+      const r = await authFetch('/api/users/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -1640,7 +1654,7 @@
       if (!confirm('Bạn đang đóng vai Hacker can thiệp trực tiếp vào MySQL để sửa lén chuỗi mã hóa AES (thay đổi cipher text điện thoại) của user ID ' + id + '\n\nHành động này mô phỏng lỗi toàn vẹn dữ liệu (Bypass integrity).\nXác nhận tấn công?')) return;
 
       try {
-        const r = await fetch('/api/attack', {
+        const r = await authFetch('/api/attack', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id })
@@ -1671,7 +1685,7 @@
       icon.innerHTML = '<div class="spinner"></div>';
 
       try {
-        const r = await fetch('/api/mask', { method: 'POST' });
+        const r = await authFetch('/api/mask', { method: 'POST' });
         const d = await r.json();
         if (d.ok) {
           showToast(` Đã mask thành công ${d.count} bản ghi!`, '🎭');
@@ -1690,10 +1704,17 @@
 
     // ── DECRYPT RECORD ──
     async function decryptRecord(m, id) {
-      const r = await fetch('/api/decrypt', {
+      const role = localStorage.getItem('role');
+      const uname = localStorage.getItem('uname');
+      const r = await authFetch('/api/decrypt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email_xor: m.email_xor, salary_aes: m.salary_xor, cccd_token: m.cccd_token, id: id })
+        body: JSON.stringify({
+          email_xor: m.email_xor,
+          salary_aes: m.salary_xor,
+          cccd_token: m.cccd_token,
+          id: id
+        })
       });
       const d = await r.json();
       const el = document.getElementById('decResult-' + id);
@@ -1861,7 +1882,7 @@
 
     async function loadStats() {
       try {
-        const r = await fetch('/api/stats');
+        const r = await authFetch('/api/stats');
         const res = await r.json();
         if (!res.ok) { showToast('Lỗi tải thống kê: ' + res.error, '✗', true); return; }
         const d = res.data;
@@ -1973,7 +1994,7 @@
     // ── LOAD LOGS ──
     async function loadLogs() {
       try {
-        const r = await fetch('/api/logs');
+        const r = await authFetch('/api/logs');
         const d = await r.json();
         const body = document.getElementById('bodyLogs');
         if (!d.ok || d.data.length === 0) {
@@ -1997,9 +2018,7 @@
     // ── E2EE CHAT FUNCTIONS ──
     async function loadChat() {
       try {
-        const role = localStorage.getItem('role') || 'Admin';
-        const username = localStorage.getItem('uname') || 'admin';
-        const r = await fetch('/api/chat?role=' + encodeURIComponent(role) + '&username=' + encodeURIComponent(username));
+        const r = await authFetch('/api/chat');
         const d = await r.json();
         const box = document.getElementById('chatMessages');
 
@@ -2134,13 +2153,12 @@
     async function doRegister() {
       const u = document.getElementById('regUser').value.trim();
       const p = document.getElementById('regPass').value.trim();
-      const r = document.getElementById('regRole').value;
       if (!u || !p) return document.getElementById('regError').textContent = 'Nhập đủ tài khoản & mật khẩu';
 
       const req = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: u, password: p, role: r })
+        body: JSON.stringify({ username: u, password: p })
       });
       const d = await req.json();
       if (d.ok) {
@@ -2174,10 +2192,23 @@
       if (d.ok) {
         localStorage.setItem('role', d.role);
         localStorage.setItem('uname', d.username);
+        localStorage.setItem('authToken', d.token);
         document.getElementById('loginModal').style.display = 'none';
 
         document.getElementById('lblUsername').textContent = d.username;
         document.getElementById('lblRole').textContent = d.role;
+        const decryptTabBtn = document.getElementById('decryptTabBtn');
+        const maskedTabBtn = document.getElementById('maskedTabBtn');
+        const statsTabBtn = document.getElementById('statsTabBtn');
+        const logsTabBtn = document.getElementById('logsTabBtn');
+        const maskBtn = document.getElementById('btnMask');
+
+        if (decryptTabBtn) decryptTabBtn.style.display = d.role === 'Admin' ? 'inline-flex' : 'none';
+        if (maskedTabBtn) maskedTabBtn.style.display = d.role === 'Khách hàng' ? 'none' : 'inline-flex';
+        if (maskBtn) maskBtn.style.display = d.role === 'Khách hàng' ? 'none' : 'inline-flex';
+        if (statsTabBtn) statsTabBtn.style.display = d.role === 'Admin' ? 'inline-flex' : 'none';
+        if (logsTabBtn) logsTabBtn.style.display = d.role === 'Admin' ? 'inline-flex' : 'none';
+
         showToast('Xin chào ' + d.username, '👋');
         loadUsers();
       } else {
@@ -2188,6 +2219,7 @@
     function doLogout() {
       localStorage.removeItem('role');
       localStorage.removeItem('uname');
+      localStorage.removeItem('authToken');
       location.reload();
     }
 
@@ -2195,18 +2227,23 @@
     window.onload = () => {
       const role = localStorage.getItem('role');
       const uname = localStorage.getItem('uname');
+      const token = localStorage.getItem('authToken');
 
-      if (!role) {
+      if (!role || !token) {
         document.getElementById('loginModal').style.display = 'flex';
         document.getElementById('loginUser').focus();
       } else {
         document.getElementById('loginModal').style.display = 'none';
         document.getElementById('lblUsername').textContent = uname;
         document.getElementById('lblRole').textContent = role;
+        if (role !== 'Admin') {
+          const decryptTabBtn = document.getElementById('decryptTabBtn');
+          if (decryptTabBtn) decryptTabBtn.style.display = 'none';
+        }
         loadUsers();
       }
 
-      fetch('/api/masked').then(r => r.json()).then(d => {
+      authFetch('/api/masked').then(r => r.json()).then(d => {
         if (d.ok) {
           document.getElementById('s-masked').textContent = d.data.length;
           document.getElementById('maskedCount').textContent = d.data.length + ' bản ghi';
