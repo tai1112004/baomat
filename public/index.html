@@ -1249,12 +1249,18 @@
         </div>
 
         <div
-          style="padding:16px 24px; border-top:1px solid var(--border); background:var(--surface); display:flex; gap:12px">
-          <input type="text" id="chatInputUser" placeholder="Tên người nhận (Role/Tên)" style="width:150px"
-            class="form-group input">
-          <input type="text" id="chatInputMsg" placeholder="Nhập tin nhắn nhạy cảm..." style="flex:1"
-            class="form-group input" onkeypress="if(event.key==='Enter') sendChat()">
-          <button class="btn btn-primary" onclick="sendChat()">📤 Gửi</button>
+          style="padding:16px 24px; border-top:1px solid var(--border); background:var(--surface); display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center;">
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <select id="chatRecipientSelect" class="form-group input" style="min-width:220px; max-width:280px;" onchange="onChatRecipientChanged()">
+              <option value="">Chọn người nhận</option>
+            </select>
+            <span id="chatPeerLabel" style="font-size:13px;color:var(--muted);">Đang chat với: <strong>Toàn bộ</strong></span>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center; width:100%;">
+            <input type="text" id="chatInputMsg" placeholder="Nhập tin nhắn nhạy cảm..." style="flex:1"
+              class="form-group input" onkeypress="if(event.key==='Enter') sendChat()">
+            <button class="btn btn-primary" onclick="sendChat()">📤 Gửi</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1423,6 +1429,7 @@
         document.getElementById('chatInputMsg').focus();
         window.chatMsgCount = 0; // Reset tracking cho màn hình chat
         document.getElementById('chatMessages').innerHTML = '<div style="text-align:center; color:var(--muted); font-size:13px; margin-top:40px">Đang đồng bộ dữ liệu mã hoá...</div>';
+        loadChatUsers();
         loadChat();
         chatInterval = setInterval(loadChat, 3000); // Tự động load mỗi 3s
       }
@@ -2016,9 +2023,63 @@
     }
 
     // ── E2EE CHAT FUNCTIONS ──
+    function getSelectedChatPeer() {
+      return document.getElementById('chatRecipientSelect').value || '';
+    }
+
+    function updateChatPeerLabel() {
+      const select = document.getElementById('chatRecipientSelect');
+      const peer = getSelectedChatPeer();
+      const label = document.getElementById('chatPeerLabel');
+      const displayText = peer ? (select.selectedOptions[0] ? select.selectedOptions[0].textContent : peer) : 'Toàn bộ';
+      label.innerHTML = `Đang chat với: <strong>${displayText}</strong>`;
+    }
+
+    async function loadChatUsers() {
+      try {
+        const r = await authFetch('/api/chat/users');
+        const d = await r.json();
+        const select = document.getElementById('chatRecipientSelect');
+        const currentUser = localStorage.getItem('uname');
+
+        if (!d.ok || !d.data.length) {
+          select.innerHTML = '<option value="">Không có tài khoản nào</option>';
+          updateChatPeerLabel();
+          return;
+        }
+
+        const options = ['<option value="">Tất cả người dùng</option>'];
+        d.data.forEach(u => {
+          if (u.username === currentUser) return;
+          const roleTag = u.role === 'Admin' ? '🛡️' : u.role === 'Nhân viên' ? '👔' : '👤';
+          options.push(`<option value="${u.username}">${roleTag} ${u.role} — ${u.username}</option>`);
+        });
+        select.innerHTML = options.join('');
+
+        const storedPeer = localStorage.getItem('chatPeer');
+        if (storedPeer && Array.from(select.options).some(o => o.value === storedPeer)) {
+          select.value = storedPeer;
+        } else {
+          select.value = '';
+        }
+        updateChatPeerLabel();
+      } catch (e) {
+        console.error('Chat users load:', e);
+      }
+    }
+
+    function onChatRecipientChanged() {
+      const select = document.getElementById('chatRecipientSelect');
+      localStorage.setItem('chatPeer', select.value);
+      updateChatPeerLabel();
+      loadChat();
+    }
+
     async function loadChat() {
       try {
-        const r = await authFetch('/api/chat');
+        const peer = getSelectedChatPeer();
+        const apiUrl = peer ? `/api/chat?peer=${encodeURIComponent(peer)}` : '/api/chat';
+        const r = await authFetch(apiUrl);
         const d = await r.json();
         const box = document.getElementById('chatMessages');
 
@@ -2046,11 +2107,10 @@
 
         if (changed) {
           let htmlAcc = '';
+          const currentUser = localStorage.getItem('uname') || d.current_user || 'admin';
           for (let i = 0; i < d.data.length; i++) {
             const msg = d.data[i];
-            const isMe = msg.sender === username;
-
-            let contentHtml = '';
+            const isMe = msg.sender === currentUser;
             if (window.decryptedChatMap[msg.id]) {
               contentHtml = window.decryptedChatMap[msg.id];
             } else {
@@ -2120,7 +2180,7 @@
 
     async function sendChat() {
       const sender = localStorage.getItem('uname') || 'admin';
-      const receiver = document.getElementById('chatInputUser').value.trim();
+      const receiver = getSelectedChatPeer();
       const plainMsg = document.getElementById('chatInputMsg').value.trim();
       const sessKey = document.getElementById('chatSessionKey').value || 'ChatSecret$123';
 
@@ -2136,7 +2196,7 @@
       if (!dc.ok || !dc.data.encrypted) return showToast('Lỗi mã hoá E2EE FE', '✗', true);
 
       // Gửi Ciphertext lên Server lưu
-      const r = await fetch('/api/chat', {
+      const r = await authFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sender, receiver, encrypted_msg: dc.data.encrypted, demo_plaintext: plainMsg })

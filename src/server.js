@@ -653,15 +653,32 @@ async function handleGetChat(req, res) {
         const session = requireSession(req, res);
         if (!session) return;
         const { username, role } = session;
+        const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+        const peer = (urlObj.searchParams.get('peer') || '').trim();
 
         const msgs = await withDB(conn => {
+            if (peer) {
+                return conn.queryRows(`SELECT * FROM secure_chat WHERE ((sender = ${conn.escape(username)} AND receiver = ${conn.escape(peer)}) OR (sender = ${conn.escape(peer)} AND receiver = ${conn.escape(username)})) ORDER BY timestamp ASC`);
+            }
             if (role === 'Admin') {
                 return conn.queryRows(`SELECT * FROM secure_chat ORDER BY timestamp ASC`);
-            } else {
-                return conn.queryRows(`SELECT * FROM secure_chat WHERE sender = ${conn.escape(username)} OR receiver = ${conn.escape(username)} ORDER BY timestamp ASC`);
             }
+            return conn.queryRows(`SELECT * FROM secure_chat WHERE sender = ${conn.escape(username)} OR receiver = ${conn.escape(username)} ORDER BY timestamp ASC`);
         });
         sendJSON(res, 200, { ok: true, data: msgs, current_user: username });
+    } catch (e) {
+        sendJSON(res, 500, { ok: false, error: e.message });
+    }
+}
+
+async function handleGetChatUsers(req, res) {
+    const session = requireSession(req, res);
+    if (!session) return;
+    try {
+        const rows = await withDB(conn =>
+            conn.queryRows(`SELECT username, role FROM accounts ORDER BY FIELD(role, 'Admin', 'Nhân viên', 'Khách hàng'), username`)
+        );
+        sendJSON(res, 200, { ok: true, data: rows, current_user: session.username });
     } catch (e) {
         sendJSON(res, 500, { ok: false, error: e.message });
     }
@@ -781,6 +798,7 @@ const server = http.createServer(async (req, res) => {
     if (pathOnly === '/api/logs' && method === 'GET') { await handleGetLogs(req, res); return; }
     if (pathOnly === '/api/attack' && method === 'POST') { await handleAttack(req, res); return; }
     if (pathOnly === '/api/hacker/tamper_chat' && method === 'POST') { await handleTamperChat(req, res); return; }
+    if (pathOnly === '/api/chat/users' && method === 'GET') { await handleGetChatUsers(req, res); return; }
     if (pathOnly === '/api/chat' && method === 'GET') { await handleGetChat(req, res); return; }
     if (pathOnly === '/api/chat' && method === 'POST') { await handlePostChat(req, res); return; }
     if (pathOnly === '/api/login' && method === 'POST') { await handleLogin(req, res); return; }
