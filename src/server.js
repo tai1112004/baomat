@@ -460,7 +460,11 @@ async function handleRunMask(req, res) {
             await conn.query('DELETE FROM token_map');
 
             const maskedList = [];
+            const tokenMapEntries = {};
             for (const user of users) {
+                const cccdToken = masking.tokenize(user.cccd, 'cccd');
+                tokenMapEntries[cccdToken] = { original: user.cccd, fieldType: 'cccd' };
+
                 const masked = {
                     id: user.id,
                     full_name_masked: masking.maskName(user.full_name),
@@ -468,7 +472,7 @@ async function handleRunMask(req, res) {
                     email_xor: masking.xorEncrypt(user.email, XOR_KEY),
                     phone_static: masking.maskPhone(user.phone),
                     phone_fpmasked: masking.fpMaskPhone(user.phone),
-                    cccd_token: masking.tokenize(user.cccd, 'cccd'),
+                    cccd_token: cccdToken,
                     salary_aes: masking.aesEncrypt(String(user.salary), AES_KEY),
                     birth_date_masked: masking.maskBirthDate(user.birth_date),
                     address_masked: masking.maskAddress(user.address),
@@ -495,12 +499,11 @@ async function handleRunMask(req, res) {
                 await conn.query(sql);
             }
 
-            // Lưu token map
-            const tokenMap = masking.getTokenMap();
-            for (const [token, info] of Object.entries(tokenMap)) {
+            // Lưu token map cccd vào database
+            for (const [token, info] of Object.entries(tokenMapEntries)) {
                 const sql = `INSERT INTO token_map (token, original, field_type)
                     VALUES (${conn.escape(token)}, ${conn.escape(info.original)}, ${conn.escape(info.fieldType)})
-                    ON DUPLICATE KEY UPDATE original=VALUES(original)`;
+                    ON DUPLICATE KEY UPDATE original=VALUES(original), field_type=VALUES(field_type)`;
                 await conn.query(sql);
             }
 
