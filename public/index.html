@@ -2151,31 +2151,58 @@
       } catch (e) { console.error('Chat load:', e); }
     }
 
-    // Hàm giải mã 1 tin nhắn khi click
-    function decryptChatMessage(id, encryptedText) {
+    async function deriveChatKey(secret) {
+      const enc = new TextEncoder();
+      const hash = await window.crypto.subtle.digest('SHA-256', enc.encode(secret));
+      return window.crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
+    }
+
+    function arrayBufferToBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+      return window.btoa(binary);
+    }
+
+    function base64ToArrayBuffer(base64) {
+      const binary = window.atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes.buffer;
+    }
+
+    async function encryptChatMessage(plainText, secret) {
+      const key = await deriveChatKey(secret);
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const encoded = new TextEncoder().encode(plainText);
+      const cipher = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+      const combined = new Uint8Array(iv.byteLength + cipher.byteLength);
+      combined.set(iv, 0);
+      combined.set(new Uint8Array(cipher), iv.byteLength);
+      return arrayBufferToBase64(combined.buffer);
+    }
+
+    async function decryptChatMessageText(cipherBase64, secret) {
+      const key = await deriveChatKey(secret);
+      const combined = new Uint8Array(base64ToArrayBuffer(cipherBase64));
+      const iv = combined.slice(0, 12);
+      const cipher = combined.slice(12);
+      const plainBuffer = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipher);
+      return new TextDecoder().decode(plainBuffer);
+    }
+
+    async function decryptChatMessage(id, encryptedText) {
       const sessKey = document.getElementById('chatSessionKey').value || 'ChatSecret$123';
       const el = document.getElementById('cplain-' + id);
       el.innerHTML = '<span style="color:var(--muted);font-size:12px">Đang giải mã...</span>';
-
-      fetch('/api/demo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'aes_decrypt', text: encryptedText, key: sessKey })
-      }).then(res => res.json()).then(dr => {
-        if (dr.ok && dr.data && dr.data.decrypted) {
-          if (dr.data.decrypted.includes('(Lỗi') || dr.data.decrypted.includes('HMAC verification failed')) {
-            window.decryptedChatMap[id] = '<span style="color:#ff0000; font-weight:bold; background:#220000; padding:2px 4px; border-radius:4px;">⚠ Dữ liệu bị giả mạo (HMAC Fail)</span>';
-            el.innerHTML = window.decryptedChatMap[id];
-          } else {
-            window.decryptedChatMap[id] = '<span style="font-size:11px;color:var(--green);margin-right:6px">🔓 Bản dịch:</span><span style="font-size:14px;color:white">' + dr.data.decrypted + '</span>';
-            el.innerHTML = window.decryptedChatMap[id];
-          }
-        } else {
-          el.innerHTML = '⚠️ Có lỗi xảy ra';
-        }
-      }).catch(e => {
-        el.innerHTML = '⚠️ Lỗi kết nối';
-      });
+      try {
+        const decrypted = await decryptChatMessageText(encryptedText, sessKey);
+        window.decryptedChatMap[id] = '<span style="font-size:11px;color:var(--green);margin-right:6px">🔓 Bản dịch:</span><span style="font-size:14px;color:white">' + decrypted + '</span>';
+        el.innerHTML = window.decryptedChatMap[id];
+      } catch (e) {
+        window.decryptedChatMap[id] = '<span style="color:#ff0000; font-weight:bold; background:#220000; padding:2px 4px; border-radius:4px;">⚠ Không giải mã được. Khóa sai hoặc dữ liệu bị giả mạo.</span>';
+        el.innerHTML = window.decryptedChatMap[id];
+      }
     }
 
     async function sendChat() {
@@ -2186,20 +2213,11 @@
 
       if (!receiver || !plainMsg) return showToast('Nhập đủ người nhận & tin nhắn!', '⚠️', true);
 
-      // Mã hoá trước khi gửi: Gọi API Demo để lấy cipher text
-      const rc = await fetch('/api/demo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'aes_encrypt', text: plainMsg, key: sessKey })
-      });
-      const dc = await rc.json();
-      if (!dc.ok || !dc.data.encrypted) return showToast('Lỗi mã hoá E2EE FE', '✗', true);
-
-      // Gửi Ciphertext lên Server lưu
+      const encrypted = await encryptChatMessage(plainMsg, sessKey);
       const r = await authFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sender, receiver, encrypted_msg: dc.data.encrypted, demo_plaintext: plainMsg })
+        body: JSON.stringify({ sender, receiver, encrypted_msg: encrypted })
       });
       const d = await r.json();
       if (d.ok) {

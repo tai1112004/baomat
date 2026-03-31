@@ -691,7 +691,7 @@ async function handlePostChat(req, res) {
 
     const body = await readBody(req);
     try {
-        const { sender, receiver, encrypted_msg, demo_plaintext } = JSON.parse(body);
+        const { sender, receiver, encrypted_msg } = JSON.parse(body);
         if (!sender || !receiver || !encrypted_msg) {
             return sendJSON(res, 400, { ok: false, error: 'Thiếu thông tin người gửi/nhận/mã hoá' });
         }
@@ -699,9 +699,8 @@ async function handlePostChat(req, res) {
             return sendJSON(res, 403, { ok: false, error: 'Forbidden: sender phải khớp với phiên đăng nhập' });
         }
         await withDB(async (conn) => {
-            const dp = demo_plaintext ? conn.escape(demo_plaintext) : 'NULL';
-            await conn.query(`INSERT INTO secure_chat (sender, receiver, encrypted_msg, demo_plaintext) 
-                              VALUES (${conn.escape(sender)}, ${conn.escape(receiver)}, ${conn.escape(encrypted_msg)}, ${dp})`);
+            await conn.query(`INSERT INTO secure_chat (sender, receiver, encrypted_msg) 
+                              VALUES (${conn.escape(sender)}, ${conn.escape(receiver)}, ${conn.escape(encrypted_msg)})`);
             await writeLog(conn, sender, 'SEND_SECURE_CHAT', receiver, 'Gửi tin nhắn được mã hoá End-to-End');
         });
         sendJSON(res, 200, { ok: true, message: 'Đã gửi' });
