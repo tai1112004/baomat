@@ -1495,7 +1495,7 @@
     // TOAST
     function showToast(msg, icon = '✓', isError = false) {
       const t = document.getElementById('toast');
-      document.getElementById('toastMsg').textContent = msg;
+      document.getElementById('toastMsg').textContent = fixMojibakeText(msg);
       document.getElementById('toastIcon').textContent = icon;
       t.style.borderColor = isError ?'rgba(248,81,73,.4)' : 'rgba(63,185,80,.4)';
       t.classList.add('show');

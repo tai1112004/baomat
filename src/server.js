@@ -291,7 +291,7 @@ function getSession(req) {
 function requireSession(req, res) {
     const session = getSession(req);
     if (!session) {
-        sendJSON(res, 401, { ok: false, error: 'Unauthorized: Thiáº¿u phiÃªn Ä‘Äƒng nháº­p hoáº·c phiÃªn háº¿t háº¡n' });
+        sendJSON(res, 401, { ok: false, error: 'Unauthorized: Thiếu phiên đăng nhập hoặc phiên hết hạn' });
         return null;
     }
     return session;
