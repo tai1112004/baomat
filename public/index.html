@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -40,7 +40,7 @@
       min-height: 100vh;
     }
 
-    /* ── HEADER ── */
+    /* â”€â”€ HEADER â”€â”€ */
     header {
       background: linear-gradient(135deg, #ffffff 0%, #eef6ff 58%, #e0f2fe 100%);
       border-bottom: 1px solid var(--border);
@@ -95,7 +95,7 @@
       font-weight: 500;
     }
 
-    /* ── STATUS BAR ── */
+    /* â”€â”€ STATUS BAR â”€â”€ */
     .status-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -146,14 +146,14 @@
       font-weight: 500;
     }
 
-    /* ── LAYOUT ── */
+    /* â”€â”€ LAYOUT â”€â”€ */
     .container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 28px 32px;
     }
 
-    /* ── TABS ── */
+    /* â”€â”€ TABS â”€â”€ */
     .tabs {
       display: flex;
       gap: 4px;
@@ -199,7 +199,7 @@
       display: block;
     }
 
-    /* ── CARDS ── */
+    /* â”€â”€ CARDS â”€â”€ */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -230,7 +230,7 @@
       padding: 20px;
     }
 
-    /* ── BUTTONS ── */
+    /* â”€â”€ BUTTONS â”€â”€ */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -288,7 +288,7 @@
       font-size: 12px;
     }
 
-    /* ── TABLE ── */
+    /* â”€â”€ TABLE â”€â”€ */
     .table-wrap {
       overflow-x: auto;
       border-radius: 8px;
@@ -325,7 +325,7 @@
       background: rgba(37, 99, 235, 0.03);
     }
 
-    /* ── BADGE ── */
+    /* â”€â”€ BADGE â”€â”€ */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -376,7 +376,7 @@
       to { background: transparent; }
     }
 
-    /* ── MONO (ciphertext) ── */
+    /* â”€â”€ MONO (ciphertext) â”€â”€ */
     .mono {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -389,7 +389,7 @@
       font-weight: 500;
     }
 
-    /* ── STAT CARDS ── */
+    /* â”€â”€ STAT CARDS â”€â”€ */
     .stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -428,7 +428,7 @@
       margin-top: 2px;
     }
 
-    /* ── DEMO PANEL ── */
+    /* â”€â”€ DEMO PANEL â”€â”€ */
     .demo-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -515,7 +515,7 @@
       color: var(--blue);
     }
 
-    /* ── LOADING ── */
+    /* â”€â”€ LOADING â”€â”€ */
     .spinner {
       display: inline-block;
       width: 14px;
@@ -532,7 +532,7 @@
       }
     }
 
-    /* ── TOAST ── */
+    /* â”€â”€ TOAST â”€â”€ */
     #toast {
       position: fixed;
       bottom: 24px;
@@ -559,7 +559,7 @@
       opacity: 1;
     }
 
-    /* ── DECRYPT MODAL ── */
+    /* â”€â”€ DECRYPT MODAL â”€â”€ */
     .decrypt-row {
       background:
         radial-gradient(circle at top left, #dbeafe 0%, transparent 28%),
@@ -599,7 +599,7 @@
       font-size: 12px;
     }
 
-    /* ── EMPTY STATE ── */
+    /* â”€â”€ EMPTY STATE â”€â”€ */
     .empty {
       text-align: center;
       padding: 60px 20px;
@@ -620,7 +620,7 @@
       margin-top: 6px;
     }
 
-    /* ── ADD FORM ── */
+    /* â”€â”€ ADD FORM â”€â”€ */
     .add-form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -675,7 +675,7 @@
       }
     }
 
-    /* ── DASHBOARD ── */
+    /* â”€â”€ DASHBOARD â”€â”€ */
     .dash-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -852,10 +852,10 @@
         <div class="logo-icon">🛡️</div>
         <div>
           Data Masking System
-          <span class="logo-sub">Quản lý Dữ liệu An toàn — JavaScript + MySQL</span>
+          <span class="logo-sub">Quản lý dữ liệu an toàn - JavaScript + MySQL</span>
         </div>
       </div>
-      <div class="header-badge">✦ Tự implement AES-128 · XOR · Token</div>
+      <div class="header-badge">✦ Tự implement AES · XOR · Token</div>
     </div>
   </header>
 
@@ -928,7 +928,7 @@
     <div id="tab-original" class="tab-panel active">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">📋 Dữ liệu Gốc (Nhạy Cảm – Không Truyền Công Khai)</div>
+          <div class="card-title">📋 Dữ liệu Gốc (Nhạy Cảm - Không Truyền Công Khai)</div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-primary" id="btnMask" onclick="runMask()">
               <span id="maskBtnIcon">🔐</span> Chạy Data Masking
@@ -1011,7 +1011,7 @@
     <div id="tab-decrypt" class="tab-panel">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🔓 Giải Mã Dữ liệu (Phía nhận có key bí mật)</div>
+          <div class="card-title">🔓 Giải Mã Dữ Liệu (Phía nhận có key bí mật)</div>
         </div>
         <div class="card-body">
           <p style="font-size:13px;color:var(--muted);margin-bottom:20px">
@@ -1069,6 +1069,19 @@
                 <label>Địa chỉ *</label>
                 <input type="text" id="add_address" placeholder="123 Nguyễn Huệ, Q1, TP.HCM">
               </div>
+              <div class="form-group">
+                <label>AES mode *</label>
+                <select id="add_aes_mode">
+                  <option value="AES-128">AES-128</option>
+                  <option value="AES-192">AES-192</option>
+                  <option value="AES-256">AES-256</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Khóa mã hóa (tùy chọn)</label>
+                <input type="text" id="add_encrypt_key" placeholder="Để trống sẽ dùng key mặc định theo mode">
+                <div class="form-hint">Nhân viên cần nhập lại đúng key này khi giải mã. Admin không cần nhập.</div>
+              </div>
             </div>
             <button class="btn btn-primary" id="btnAddUser" onclick="addUser()" style="width:100%;margin-top:8px">
               <span id="addBtnIcon">➕</span> Thêm vào Database
@@ -1080,7 +1093,7 @@
         <!-- Hướng dẫn -->
         <div class="card">
           <div class="card-header">
-            <div class="card-title">💡 Lưu ý</div>
+            <div class="card-title">💡 Lưu Ý</div>
           </div>
           <div class="card-body">
             <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
@@ -1094,7 +1107,7 @@
               <div
                 style="padding:12px;background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.2);border-radius:8px">
                 <div style="font-weight:600;color:var(--red);margin-bottom:4px">⚠️ Dữ liệu nhạy cảm</div>
-                <div style="color:var(--muted)">Đây là dữ liệu GỐC — không truyền công khai. Phải mask trước khi chia
+                <div style="color:var(--muted)">Đây là dữ liệu GỐC - không truyền công khai. Phải mask trước khi chia
                   sẻ.</div>
               </div>
               <div
@@ -1243,14 +1256,14 @@
     <div id="tab-chat" class="tab-panel">
       <div class="card" style="max-width:800px; margin:0 auto; display:flex; flex-direction:column; height:600px;">
         <div class="card-header">
-          <div class="card-title">💬 Kênh Chat Nội Bộ Bí Mật (Mã hoá E2EE: AES-128 CBC)</div>
+          <div class="card-title">💬 Kênh Chat Nội Bộ Bí Mật (Mã hóa E2EE: AES-128 CBC)</div>
           <button class="btn btn-secondary btn-sm" onclick="loadChat()">🔄 Cập nhật</button>
         </div>
 
         <div
           style="padding: 12px 24px; background:var(--bg); border-bottom:1px solid var(--border); display:flex; gap:16px; align-items:center;">
           <div style="font-size:13px; color:var(--muted)">Khóa Session AES (Symmetric Key tự nhập):</div>
-          <input type="password" id="chatSessionKey" value="ChatSecret$123" placeholder="Nhập chung 1 khóa với ng nhận"
+          <input type="password" id="chatSessionKey" value="ChatSecret$123" placeholder="Nhập chung 1 khóa với người nhận"
             style="padding:6px 12px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--text); width:200px">
         </div>
 
@@ -1329,7 +1342,7 @@
                   <div style="font-size:20px">🎭</div>
                   <div>
                     <div style="font-size:13px;font-weight:600">Static Masking</div>
-                    <div style="font-size:12px;color:var(--muted)">Che ký tự bằng *** — Không thể khôi phục</div>
+                    <div style="font-size:12px;color:var(--muted)">Che ký tự bằng *** - Không thể khôi phục</div>
                   </div>
                   <div style="margin-left:auto"><span class="badge badge-orange">One-way</span></div>
                 </div>
@@ -1356,7 +1369,7 @@
                   <div style="font-size:20px">🎫</div>
                   <div>
                     <div style="font-size:13px;font-weight:600">Tokenization</div>
-                    <div style="font-size:12px;color:var(--muted)">Replace với random token — Map server-side</div>
+                    <div style="font-size:12px;color:var(--muted)">Replace với random token - Map server-side</div>
                   </div>
                   <div style="margin-left:auto"><span class="badge badge-purple">Token</span></div>
                 </div>
@@ -1422,7 +1435,40 @@
   <script>
     let chatInterval = null;
 
-    // ── TABS ──
+    function getRoleCode(role) {
+      const raw = String(role || '').toLowerCase();
+      if (raw.includes('admin')) return 'admin';
+      if (raw.includes('nh') || raw.includes('vi')) return 'employee';
+      if (raw.includes('kh') || raw.includes('ch')) return 'customer';
+      return raw;
+    }
+
+    function fixMojibakeText(value) {
+      let s = String(value || '');
+      const replacements = [
+        ['Ä', 'Đ'], ['Ä‘', 'đ'], ['Ã¡', 'á'], ['Ã ', 'à'], ['Ã ', 'à'], ['áº£', 'ả'], ['Ã£', 'ã'], ['áº¡', 'ạ'],
+        ['Äƒ', 'ă'], ['áº¯', 'ắ'], ['áº±', 'ằ'], ['áº³', 'ẳ'], ['áºµ', 'ẵ'], ['áº·', 'ặ'],
+        ['Ã¢', 'â'], ['áº¥', 'ấ'], ['áº§', 'ầ'], ['áº©', 'ẩ'], ['áº«', 'ẫ'], ['áº­', 'ậ'],
+        ['Ã©', 'é'], ['Ã¨', 'è'], ['áº»', 'ẻ'], ['áº½', 'ẽ'], ['áº¹', 'ẹ'],
+        ['Ãª', 'ê'], ['áº¿', 'ế'], ['á»', 'ề'], ['á»ƒ', 'ể'], ['á»…', 'ễ'], ['á»‡', 'ệ'],
+        ['Ã­', 'í'], ['Ã¬', 'ì'], ['á»‰', 'ỉ'], ['Ä©', 'ĩ'], ['á»‹', 'ị'],
+        ['Ã³', 'ó'], ['Ã²', 'ò'], ['á»', 'ỏ'], ['Ãµ', 'õ'], ['á»', 'ọ'],
+        ['Ã´', 'ô'], ['á»‘', 'ố'], ['á»“', 'ồ'], ['á»•', 'ổ'], ['á»—', 'ỗ'], ['á»™', 'ộ'],
+        ['Æ¡', 'ơ'], ['á»›', 'ớ'], ['á»', 'ờ'], ['á»Ÿ', 'ở'], ['á»¡', 'ỡ'], ['á»£', 'ợ'],
+        ['Ãº', 'ú'], ['Ã¹', 'ù'], ['á»§', 'ủ'], ['Å©', 'ũ'], ['á»¥', 'ụ'],
+        ['Æ°', 'ư'], ['á»©', 'ứ'], ['á»«', 'ừ'], ['á»­', 'ử'], ['á»¯', 'ữ'], ['á»±', 'ự'],
+        ['Ã½', 'ý'], ['á»³', 'ỳ'], ['á»·', 'ỷ'], ['á»¹', 'ỹ'], ['á»µ', 'ỵ'],
+        ['Ã', 'Á'], ['Ã€', 'À'], ['áº¢', 'Ả'], ['Ãƒ', 'Ã'], ['Ä‚', 'Ă'], ['Ã‚', 'Â'],
+        ['Ã‰', 'É'], ['Ãˆ', 'È'], ['ÃŠ', 'Ê'], ['Ã', 'Í'], ['ÃŒ', 'Ì'],
+        ['Ã“', 'Ó'], ['Ã’', 'Ò'], ['Ã•', 'Õ'], ['Ã”', 'Ô'], ['Æ ', 'Ơ'],
+        ['Ãš', 'Ú'], ['Ã™', 'Ù'], ['Æ¯', 'Ư'], ['Ã', 'Ý'],
+        ['â€”', '—'], ['â€“', '–'], ['â€¦', '…'], ['Â·', '·']
+      ];
+      for (const [bad, good] of replacements) s = s.split(bad).join(good);
+      return s;
+    }
+
+    // â”€â”€ TABS â”€â”€
     function switchTab(name) {
       document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1438,20 +1484,20 @@
       if (name === 'logs') loadLogs();
       if (name === 'chat') {
         document.getElementById('chatInputMsg').focus();
-        window.chatMsgCount = 0; // Reset tracking cho màn hình chat
-        document.getElementById('chatMessages').innerHTML = '<div style="text-align:center; color:var(--muted); font-size:13px; margin-top:40px">Đang đồng bộ dữ liệu mã hoá...</div>';
+        window.chatMsgCount = 0; // Reset tracking cho mÃ n hÃ¬nh chat
+        document.getElementById('chatMessages').innerHTML = '<div style="text-align:center; color:var(--muted); font-size:13px; margin-top:40px">Äang Ä‘á»“ng bá»™ dá»¯ liá»‡u mÃ£ hoÃ¡...</div>';
         loadChatUsers();
         loadChat();
-        chatInterval = setInterval(loadChat, 3000); // Tự động load mỗi 3s
+        chatInterval = setInterval(loadChat, 3000); // Tá»± Ä‘á»™ng load má»—i 3s
       }
     }
 
-    // ── TOAST ──
-    function showToast(msg, icon = '✓', isError = false) {
+    // â”€â”€ TOAST â”€â”€
+    function showToast(msg, icon = 'âœ“', isError = false) {
       const t = document.getElementById('toast');
       document.getElementById('toastMsg').textContent = msg;
       document.getElementById('toastIcon').textContent = icon;
-      t.style.borderColor = isError ? 'rgba(248,81,73,.4)' : 'rgba(63,185,80,.4)';
+      t.style.borderColor = isError ?'rgba(248,81,73,.4)' : 'rgba(63,185,80,.4)';
       t.classList.add('show');
       setTimeout(() => t.classList.remove('show'), 3000);
     }
@@ -1465,7 +1511,7 @@
       return fetch(url, options);
     }
 
-    // ── FORMAT ──
+    // â”€â”€ FORMAT â”€â”€
     function fmtSalary(v) {
       if (!v) return '—';
       const n = parseFloat(v);
@@ -1473,13 +1519,14 @@
     }
     function shortMono(v, len = 28) {
       if (!v) return '—';
-      return v.length > len ? v.substring(0, len) + '…' : v;
+      return v.length > len ?v.substring(0, len) + '…' : v;
     }
 
-    // ── LOAD USERS ──
+    // â”€â”€ LOAD USERS â”€â”€
     async function loadUsers() {
       try {
         const role = localStorage.getItem('role') || 'Admin';
+        const roleCode = getRoleCode(role);
         const r = await authFetch('/api/users');
         const d = await r.json();
         const body = document.getElementById('bodyUsers');
@@ -1493,23 +1540,23 @@
         document.getElementById('userCount').textContent = d.data.length + ' bản ghi';
 
         body.innerHTML = d.data.map(u => {
-          const attacked = role === 'Admin' && window.recentlyAttackedUserId === u.id
-            ? `<span class="badge badge-red" style="font-size:10px;margin-top:6px">Đã giả mạo</span>`
+          const attacked = roleCode === 'admin' && window.recentlyAttackedUserId === u.id
+            ?`<span class="badge badge-red" style="font-size:10px;margin-top:6px">Đã giả mạo</span>`
             : '';
           return `
-      <tr id="row-${u.id}" ${window.recentlyAttackedUserId === u.id ? 'class="row-attacked"' : ''}>
+      <tr id="row-${u.id}" ${window.recentlyAttackedUserId === u.id ?'class="row-attacked"' : ''}>
         <td><span class="badge badge-blue">${u.id}</span></td>
         <td><strong>${u.full_name}</strong></td>
         <td style="color:var(--blue)">${u.email}</td>
         <td>${u.phone}</td>
         <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${u.cccd}</td>
-        <td style="color:var(--green)">${u.salary === '*** VNĐ' ? u.salary : fmtSalary(u.salary)}</td>
-        <td>${u.birth_date ? (u.birth_date.length > 10 ? u.birth_date : u.birth_date.substring(0, 10)) : '—'}</td>
+        <td style="color:var(--green)">${u.salary === '*** VNĐ' ?u.salary : fmtSalary(u.salary)}</td>
+        <td>${u.birth_date ?(u.birth_date.length > 10 ?u.birth_date : u.birth_date.substring(0, 10)) : '—'}</td>
         <td style="font-size:12px;color:var(--muted)">${u.address}</td>
         <td>
           <div style="display:flex; gap:6px; flex-direction:column">
-            ${role === 'Admin' ? `<button class="btn-danger-sm" onclick="deleteUser(${u.id}, '${u.full_name.replace(/'/g, '')}')">🗑️ Xóa</button>` : `<span class="badge badge-purple" style="font-size:10px">Chỉ xem</span>`}
-            ${role === 'Admin' ? `<button class="btn-primary-sm" style="background:#cc0000;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;" onclick="simulateAttack(${u.id})">🔪 Lén giả mạo</button>` : ''}
+            ${roleCode === 'admin' ?`<button class="btn-danger-sm" onclick="deleteUser(${u.id}, '${u.full_name.replace(/'/g, '')}')">🗑️ Xóa</button>` : `<span class="badge badge-purple" style="font-size:10px">Chỉ xem</span>`}
+            ${roleCode === 'admin' ?`<button class="btn-primary-sm" style="background:#cc0000;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:11px;" onclick="simulateAttack(${u.id})">🔪 Lén giả mạo</button>` : ''}
             ${attacked}
           </div>
         </td>
@@ -1524,9 +1571,10 @@
       }
     }
 
-    // ── LOAD MASKED ──
+    // â”€â”€ LOAD MASKED â”€â”€
     async function loadMasked() {
       const role = localStorage.getItem('role');
+      const roleCode = getRoleCode(role);
       const r = await authFetch('/api/masked');
       const d = await r.json();
       const body = document.getElementById('bodyMasked');
@@ -1556,17 +1604,18 @@
       <td><span class="mono" title="${m.salary_xor}">AES: ${shortMono(m.salary_xor, 20)}</span></td>
       <td><span class="masked-val">${m.birth_date_masked}</span></td>
       <td>
-        ${role === 'Admin' ? `<button class="btn btn-secondary btn-sm" onclick='openDecryptModal(${JSON.stringify(m)})'>🔓 Giải mã</button>` : `<span class="badge badge-purple" style="font-size:10px">Chỉ Admin</span>`}
+        ${roleCode === 'admin' ?`<button class="btn btn-secondary btn-sm" onclick='openDecryptModal(${JSON.stringify(m)})'>🔓 Giải mã</button>` : `<span class="badge badge-purple" style="font-size:10px">Chỉ Admin</span>`}
       </td>
     </tr>`).join('');
     }
 
-    // ── LOAD DECRYPT TAB ──
+    // â”€â”€ LOAD DECRYPT TAB â”€â”€
     async function loadDecrypt() {
       const role = localStorage.getItem('role');
+      const roleCode = getRoleCode(role);
       const container = document.getElementById('decryptList');
-      if (role !== 'Admin') {
-        container.innerHTML = `<div class="empty"><div class="empty-icon">🚫</div><div class="empty-text">Chỉ Admin mới được truy cập tab giải mã.</div></div>`;
+      if (!['admin', 'employee'].includes(roleCode)) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">🚫</div><div class="empty-text">Chỉ Admin hoặc Nhân viên mới được truy cập tab giải mã.</div></div>`;
         return;
       }
       const r = await authFetch('/api/masked');
@@ -1577,27 +1626,29 @@
         return;
       }
 
+      const employeeMode = roleCode === 'employee';
       container.innerHTML = d.data.map(m => `
     <div class="decrypt-row" id="dr-${m.id}">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:12px;flex-wrap:wrap">
         <strong>User ID ${m.id} — <span class="masked-val">${m.full_name_masked}</span></strong>
-        <button class="btn btn-success btn-sm" onclick='decryptRecord(${JSON.stringify(m)}, ${m.id})'>🔓 Giải mã</button>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          ${employeeMode ?`<input type="password" id="decrypt_key_${m.id}" placeholder="Nhập key đã dùng khi mã hóa" style="min-width:220px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">` : `<span class="badge badge-blue">Admin: server tự mở khóa</span>`}
+          <button class="btn btn-success btn-sm" onclick="decryptRecord(${m.id})">🔓 Giải mã</button>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div>
-          <div class="row-label">Email XOR (ciphertext)</div>
+          <div class="row-label">Email XOR (masked layer)</div>
           <div class="row-val">${shortMono(m.email_xor, 35)}</div>
         </div>
         <div>
-          <div class="row-label">Lương AES-128 (ciphertext)</div>
+          <div class="row-label">Lương AES (masked layer)</div>
           <div class="row-val">${shortMono(m.salary_xor, 35)}</div>
         </div>
       </div>
       <div id="decResult-${m.id}"></div>
     </div>`).join('');
     }
-
-    // ── ADD USER ──
     async function addUser() {
       const btn = document.getElementById('btnAddUser');
       const icon = document.getElementById('addBtnIcon');
@@ -1610,6 +1661,8 @@
       const salary = document.getElementById('add_salary').value.trim();
       const birth_date = document.getElementById('add_birth').value;
       const address = document.getElementById('add_address').value.trim();
+      const aes_mode = document.getElementById('add_aes_mode').value;
+      const encryption_key = document.getElementById('add_encrypt_key').value.trim();
 
       if (!full_name || !email || !phone || !cccd || !salary || !birth_date || !address) {
         resultEl.innerHTML = `<div style="padding:12px;background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:8px;color:var(--red)">⚠️ Vui lòng điền đầy đủ tất cả các trường!</div>`;
@@ -1628,15 +1681,17 @@
         const r = await authFetch('/api/users/add', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ full_name, email, phone, cccd, salary: parseFloat(salary), birth_date, address })
+          body: JSON.stringify({ full_name, email, phone, cccd, salary: parseFloat(salary), birth_date, address, aes_mode, encryption_key })
         });
         const d = await r.json();
         if (d.ok) {
-          resultEl.innerHTML = `<div style="padding:12px;background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);border-radius:8px;color:var(--green)">✓ ${d.message}</div>`;
+          const keyNote = d.used_default_key ?' Dùng key mặc định.' : ' Dùng key do bạn nhập.';
+          resultEl.innerHTML = `<div style="padding:12px;background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);border-radius:8px;color:var(--green)">✓ ${d.message}${keyNote}</div>`;
           showToast(d.message, '✓');
           // Reset form
-          ['add_name', 'add_email', 'add_phone', 'add_cccd', 'add_salary', 'add_birth', 'add_address'].forEach(id => document.getElementById(id).value = '');
-          // Cập nhật stat
+          ['add_name', 'add_email', 'add_phone', 'add_cccd', 'add_salary', 'add_birth', 'add_address', 'add_encrypt_key'].forEach(id => document.getElementById(id).value = '');
+          document.getElementById('add_aes_mode').value = 'AES-128';
+          // Cáº­p nháº­t stat
           loadUsers();
         } else {
           resultEl.innerHTML = `<div style="padding:12px;background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:8px;color:var(--red)">✗ ${d.error}</div>`;
@@ -1650,7 +1705,7 @@
       icon.textContent = '➕';
     }
 
-    // ── DELETE USER ──
+    // â”€â”€ DELETE USER â”€â”€
     async function deleteUser(id, name) {
       if (!confirm('Xóa nhân viên "' + name + '"?')) return;
       const r = await authFetch('/api/users/delete', {
@@ -1667,7 +1722,7 @@
       }
     }
 
-    // ── SIMULATE ATTACK (HMAC TEST) ──
+    // â”€â”€ SIMULATE ATTACK (HMAC TEST) â”€â”€
     async function simulateAttack(id) {
       if (!confirm('Bạn đang đóng vai Hacker can thiệp trực tiếp vào MySQL để sửa lén chuỗi mã hóa AES (thay đổi cipher text điện thoại) của user ID ' + id + '\n\nHành động này mô phỏng lỗi toàn vẹn dữ liệu (Bypass integrity).\nXác nhận tấn công?')) return;
 
@@ -1695,7 +1750,7 @@
       }
     }
 
-    // ── RUN MASK ──
+    // â”€â”€ RUN MASK â”€â”€
     async function runMask() {
       const btn = document.getElementById('btnMask');
       const icon = document.getElementById('maskBtnIcon');
@@ -1706,7 +1761,7 @@
         const r = await authFetch('/api/mask', { method: 'POST' });
         const d = await r.json();
         if (d.ok) {
-          showToast(` Đã mask thành công ${d.count} bản ghi!`, '🎭');
+          showToast(`Đã mask thành công ${d.count} bản ghi!`, '🎭');
           document.getElementById('s-masked').textContent = d.count;
           document.getElementById('s-tokens').textContent = d.count;
         } else {
@@ -1720,49 +1775,67 @@
       icon.textContent = '🔐';
     }
 
-    // ── DECRYPT RECORD ──
-    async function decryptRecord(m, id) {
+    // â”€â”€ DECRYPT RECORD â”€â”€
+    async function decryptRecord(id) {
       const role = localStorage.getItem('role');
-      const uname = localStorage.getItem('uname');
+      const roleCode = getRoleCode(role);
+      const keyInput = document.getElementById('decrypt_key_' + id);
+      const decrypt_key = keyInput ?keyInput.value.trim() : '';
       const r = await authFetch('/api/decrypt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email_xor: m.email_xor,
-          salary_aes: m.salary_xor,
-          cccd_token: m.cccd_token,
-          id: id
-        })
+        body: JSON.stringify({ id, decrypt_key })
       });
       const d = await r.json();
       const el = document.getElementById('decResult-' + id);
-      if (d.ok) {
-        el.innerHTML = `
-      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      if (!d.ok) {
+        el.innerHTML = `<div style="margin-top:12px;padding:10px;border-radius:8px;background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);color:var(--red)">✗ ${d.error}</div>`;
+        return;
+      }
+      el.innerHTML = `
+      <div style="margin-top:12px;padding:10px;border-radius:8px;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);color:var(--text);font-size:13px">
+        <strong>Mode mã hóa:</strong> ${d.data.data_cipher_mode || 'AES-128'}
+        ${roleCode === 'employee' ?'<span style="margin-left:8px;color:var(--muted)">| Đã xác thực bằng key bạn nhập</span>' : '<span style="margin-left:8px;color:var(--muted)">| Admin dùng khóa bọc phía server</span>'}
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
-          <div class="row-label" style="color:var(--green)">✓ Email gốc</div>
+          <div class="row-label" style="color:var(--green)">Họ tên gốc</div>
+          <div class="row-orig">${d.data.full_name || '—'}</div>
+        </div>
+        <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
+          <div class="row-label" style="color:var(--green)">Email gốc</div>
           <div class="row-orig">${d.data.email || '—'}</div>
         </div>
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
-          <div class="row-label" style="color:var(--green)">✓ Lương gốc</div>
-          <div class="row-orig">${d.data.salary ? parseFloat(d.data.salary).toLocaleString('vi-VN') + ' đ' : '—'}</div>
+          <div class="row-label" style="color:var(--green)">Số điện thoại</div>
+          <div class="row-orig">${d.data.phone || '—'}</div>
         </div>
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
-          <div class="row-label" style="color:var(--green)">✓ CCCD gốc</div>
+          <div class="row-label" style="color:var(--green)">CCCD gốc</div>
           <div class="row-orig">${d.data.cccd || '—'}</div>
         </div>
+        <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
+          <div class="row-label" style="color:var(--green)">Lương gốc</div>
+          <div class="row-orig">${d.data.salary ?parseFloat(d.data.salary).toLocaleString('vi-VN') + ' đ' : '—'}</div>
+        </div>
+        <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
+          <div class="row-label" style="color:var(--green)">Ngày sinh</div>
+          <div class="row-orig">${d.data.birth_date || '—'}</div>
+        </div>
+        <div style="grid-column:1 / -1;background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
+          <div class="row-label" style="color:var(--green)">Địa chỉ gốc</div>
+          <div class="row-orig">${d.data.address || '—'}</div>
+        </div>
       </div>`;
-      }
     }
-
     async function openDecryptModal(m) {
       switchTab('decrypt');
       document.querySelectorAll('.tab')[2].click();
       await loadDecrypt();
-      setTimeout(() => decryptRecord(m, m.id), 300);
+      setTimeout(() => decryptRecord(m.id), 300);
     }
 
-    // ── DEMO ──
+    // DEMO
     function updateDemoHint() {
       const type = document.getElementById('demoType').value;
       const hints = {
@@ -1774,7 +1847,7 @@
       document.getElementById('demoInput').placeholder = hints[type] || '';
       document.getElementById('demoInput').value = hints[type] || '';
       const needKey = ['xor', 'aes'].includes(type);
-      document.getElementById('keyGroup').style.display = needKey ? 'block' : 'none';
+      document.getElementById('keyGroup').style.display = needKey ?'block' : 'none';
       document.getElementById('demoResult').innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:10px">Kết quả sẽ hiển thị ở đây</div>';
     }
 
@@ -1809,7 +1882,7 @@
       <div class="result-row"><div class="result-label">${lbl}</div><div class="result-val ${cls}">${val}</div></div>`).join('')}`;
     }
 
-    // ── STATS & CHARTS ──
+    // STATS & CHARTS
     const COLORS = ['#7c3aed', '#3fb950', '#58a6ff', '#f0883e', '#f85149'];
     const LABELS = ['Static Masking', 'XOR Cipher', 'AES-128', 'Format-Preserving', 'Tokenization'];
 
@@ -1893,7 +1966,7 @@
         ctx.fillText(d.v, x + bw / 2, y - 6);
         // Label
         ctx.fillStyle = '#8b949e'; ctx.font = '10px Inter,sans-serif';
-        const lbl = d.l.length > 6 ? d.l.substring(0, 5) + '…' : d.l;
+        const lbl = d.l.length > 6 ?d.l.substring(0, 5) + '…' : d.l;
         ctx.fillText(lbl, x + bw / 2, H - 12);
       });
     }
@@ -1922,7 +1995,7 @@
 
         // Donut legend
         document.getElementById('donutLegend').innerHTML = techKeys.map((k, i) => {
-          const pct = total > 0 ? Math.round(techVals[i] / total * 100) : 0;
+          const pct = total > 0 ?Math.round(techVals[i] / total * 100) : 0;
           return `<div class="legend-item">
         <div class="legend-dot" style="background:${COLORS[i]}"></div>
         <span style="color:var(--muted)">${k}</span>
@@ -1932,9 +2005,9 @@
         }).join('');
 
         // Security score
-        const maskRatio = d.users > 0 ? d.masked / d.users : 0;
-        const fieldScore = Math.min(100, techKeys.length * 18); // 5 kỹ thuật = 90 điểm
-        const coverScore = Math.round(maskRatio * 10);           // 100% mask = 10 điểm
+        const maskRatio = d.users > 0 ?d.masked / d.users : 0;
+        const fieldScore = Math.min(100, techKeys.length * 18);
+        const coverScore = Math.round(maskRatio * 10);
         const totalScore = Math.min(100, fieldScore + coverScore);
         document.getElementById('scoreNum').textContent = totalScore;
         drawScoreArc(document.getElementById('scoreArc'), totalScore);
@@ -1974,7 +2047,7 @@
           recentBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:30px">Chưa có lịch sử mask</td></tr>`;
         } else {
           recentBody.innerHTML = d.recent.map((r, i) => {
-            const dt = r.masked_at ? new Date(r.masked_at).toLocaleString('vi-VN') : '—';
+            const dt = r.masked_at ?new Date(r.masked_at).toLocaleString('vi-VN') : '—';
             return `<tr>
           <td><span class="badge badge-blue">${r.id}</span></td>
           <td><span class="masked-val">${r.full_name_masked || '—'}</span></td>
@@ -1987,7 +2060,7 @@
         if (d.salary && d.users > 0) {
           const fmt = v => parseFloat(v || 0).toLocaleString('vi-VN') + ' đ';
           document.getElementById('salaryStats').innerHTML = `
-        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">💰 Thống kê Lương (dữ liệu gốc)</div>
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">💰 Thống kê lương (dữ liệu gốc)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
           <div style="text-align:center;padding:10px;background:var(--bg);border-radius:8px">
             <div style="font-size:10px;color:var(--muted)">Thấp nhất</div>
@@ -2009,7 +2082,7 @@
       }
     }
 
-    // ── LOAD LOGS ──
+    // LOAD LOGS
     async function loadLogs() {
       try {
         const r = await authFetch('/api/logs');
@@ -2022,10 +2095,10 @@
         body.innerHTML = d.data.map(l => `
           <tr>
             <td style="font-size:12px;color:var(--muted)">${new Date(l.timestamp).toLocaleString('vi-VN')}</td>
-            <td><strong>${l.username}</strong></td>
-            <td><span class="badge ${l.action.includes('USER') ? 'badge-blue' : 'badge-green'}">${l.action}</span></td>
+            <td><strong>${fixMojibakeText(l.username)}</strong></td>
+            <td><span class="badge ${l.action.includes('USER') ?'badge-blue' : 'badge-green'}">${l.action}</span></td>
             <td><span class="badge badge-purple" style="font-size:10px">${l.target_id}</span></td>
-            <td style="font-size:12px;color:var(--text)">${l.details}</td>
+            <td style="font-size:12px;color:var(--text)">${fixMojibakeText(l.details)}</td>
           </tr>
         `).join('');
       } catch (e) {
@@ -2033,7 +2106,7 @@
       }
     }
 
-    // ── E2EE CHAT FUNCTIONS ──
+    // E2EE CHAT FUNCTIONS
     function getSelectedChatPeer() {
       return document.getElementById('chatRecipientSelect').value || '';
     }
@@ -2042,7 +2115,7 @@
       const select = document.getElementById('chatRecipientSelect');
       const peer = getSelectedChatPeer();
       const label = document.getElementById('chatPeerLabel');
-      const displayText = peer ? (select.selectedOptions[0] ? select.selectedOptions[0].textContent : peer) : 'Toàn bộ';
+      const displayText = peer ?(select.selectedOptions[0] ?select.selectedOptions[0].textContent : peer) : 'Toàn bộ';
       label.innerHTML = `Đang chat với: <strong>${displayText}</strong>`;
     }
 
@@ -2062,7 +2135,7 @@
         const options = ['<option value="">Tất cả người dùng</option>'];
         d.data.forEach(u => {
           if (u.username === currentUser) return;
-          const roleTag = u.role === 'Admin' ? '🛡️' : u.role === 'Nhân viên' ? '👔' : '👤';
+          const roleTag = u.role === 'Admin' ?'🛡️' : getRoleCode(u.role) === 'employee' ?'👔' : '👤';
           options.push(`<option value="${u.username}">${roleTag} ${u.role} — ${u.username}</option>`);
         });
         select.innerHTML = options.join('');
@@ -2089,17 +2162,17 @@
     async function loadChat() {
       try {
         const peer = getSelectedChatPeer();
-        const apiUrl = peer ? `/api/chat?peer=${encodeURIComponent(peer)}` : '/api/chat';
+        const apiUrl = peer ?`/api/chat?peer=${encodeURIComponent(peer)}` : '/api/chat';
         const r = await authFetch(apiUrl);
         const d = await r.json();
         const box = document.getElementById('chatMessages');
 
         if (!d.ok || d.data.length === 0) {
-          box.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:13px; margin-top:40px">Chưa có tin nhắn nào. Cuộc gọi mã hoá End-to-End được áp dụng.</div>';
+          box.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:13px; margin-top:40px">Chưa có tin nhắn nào. Mã hóa End-to-End đang được áp dụng.</div>';
           return;
         }
 
-        // Lôi key đang nhập trên UI
+        // Lấy key đang nhập trên UI
         const sessKey = document.getElementById('chatSessionKey').value || 'ChatSecret$123';
         if (!window.decryptedChatMap) window.decryptedChatMap = {};
         if (!window.chatCache) window.chatCache = {};
@@ -2126,21 +2199,21 @@
               contentHtml = window.decryptedChatMap[msg.id];
             } else {
               contentHtml = `
-                    <span style="opacity:0.7;font-style:italic">Tin nhắn đã được mã hoá E2EE</span><br>
+                    <span style="opacity:0.7;font-style:italic">Tin nhắn đã được mã hóa E2EE</span><br>
                     <span style="font-family:monospace;font-size:11px">${msg.encrypted_msg.substring(0, 40)}...</span>
                     `;
             }
 
-            const align = isMe ? 'flex-end' : 'flex-start';
-            const bg = isMe ? 'var(--blue)' : 'var(--surface2)';
+            const align = isMe ?'flex-end' : 'flex-start';
+            const bg = isMe ?'var(--blue)' : 'var(--surface2)';
 
             htmlAcc += `
                     <div style="display:flex; flex-direction:column; align-items:${align}">
-                    <div style="font-size:11px; color:var(--muted); margin-bottom:4px">${msg.sender} ➔ ${msg.receiver}</div>
+                    <div style="font-size:11px; color:var(--muted); margin-bottom:4px">${msg.sender} ➜ ${msg.receiver}</div>
                     
                     <div style="background:${bg}; padding:10px 14px; border-radius:12px; max-width:80%; position:relative;">
                         
-                        <div style="font-size:13px; color:${isMe ? '#fff' : 'var(--text)'}; word-break:break-all;" id="cplain-${msg.id}">
+                        <div style="font-size:13px; color:${isMe ?'#fff' : 'var(--text)'}; word-break:break-all;" id="cplain-${msg.id}">
                         ${contentHtml}
                         </div>
                         
@@ -2220,8 +2293,8 @@
       const bytes = [];
       for (let i = 0; i < hex.length; i += 2) {
         const h = hex.substring(i, i + 2).toUpperCase();
-        const high = h.charCodeAt(0) <= 57 ? h.charCodeAt(0) - 48 : h.charCodeAt(0) - 55;
-        const low = h.charCodeAt(1) <= 57 ? h.charCodeAt(1) - 48 : h.charCodeAt(1) - 55;
+        const high = h.charCodeAt(0) <= 57 ?h.charCodeAt(0) - 48 : h.charCodeAt(0) - 55;
+        const low = h.charCodeAt(1) <= 57 ?h.charCodeAt(1) - 48 : h.charCodeAt(1) - 55;
         bytes.push((high << 4) | low);
       }
       return bytes;
@@ -2266,9 +2339,9 @@
       for (let round = 1; round <= 9; round++) {
         state = state.map(b => AES_SBOX[b]);
         const s = [...state];
-        state[1] = s[5]; state[5] = s[9]; state[9] = s[13]; state[13] = s[1]; // ShiftRows hàng 1
-        state[2] = s[10]; state[10] = s[2]; state[6] = s[14]; state[14] = s[6]; // ShiftRows hàng 2
-        state[15] = s[11]; state[11] = s[7]; state[7] = s[3]; state[3] = s[15]; // ShiftRows hàng 3
+        state[1] = s[5]; state[5] = s[9]; state[9] = s[13]; state[13] = s[1]; // ShiftRows hÃ ng 1
+        state[2] = s[10]; state[10] = s[2]; state[6] = s[14]; state[14] = s[6]; // ShiftRows hÃ ng 2
+        state[15] = s[11]; state[11] = s[7]; state[7] = s[3]; state[3] = s[15]; // ShiftRows hÃ ng 3
         const next = new Array(16);
         for (let c = 0; c < 4; c++) {
           const i = c * 4;
@@ -2366,7 +2439,7 @@
       return hmacSha1(keyStr, hex) + hex;
     }
     function manualAesDecrypt(hexIn, keyStr) {
-      if (!hexIn || hexIn.length < 72) return "(Lỗi d.l.)";
+      if (!hexIn || hexIn.length < 72) return "(Lỗi dữ liệu)";
       const mac = hexIn.substring(0, 40), cipherHex = hexIn.substring(40);
       if (mac !== hmacSha1(keyStr, cipherHex)) return "HMAC verification failed! Dữ liệu bị giả mạo.";
       const keyBytes = stringToBytes(keyStr);
@@ -2387,12 +2460,12 @@
     }
 
     async function encryptChatMessage(plainText, secret) {
-      // Chuyển sang dùng hàm thủ công (AES-128 CBC)
+      // Chuyá»ƒn sang dÃ¹ng hÃ m thá»§ cÃ´ng (AES-128 CBC)
       return manualAesEncrypt(plainText, secret);
     }
 
     async function decryptChatMessageText(cipherHex, secret) {
-      // Chuyển sang dùng hàm thủ công (AES-128 CBC)
+      // Chuyá»ƒn sang dÃ¹ng hÃ m thá»§ cÃ´ng (AES-128 CBC)
       return manualAesDecrypt(cipherHex, secret);
     }
 
@@ -2417,7 +2490,7 @@
       const plainMsg = document.getElementById('chatInputMsg').value.trim();
       const sessKey = document.getElementById('chatSessionKey').value || 'ChatSecret$123';
 
-      if (!receiver || !plainMsg) return showToast('Nhập đủ người nhận & tin nhắn!', '⚠️', true);
+      if (!receiver || !plainMsg) return showToast('Nhập đủ người nhận và tin nhắn!', '⚠️', true);
 
       const encrypted = await encryptChatMessage(plainMsg, sessKey);
       const r = await authFetch('/api/chat', {
@@ -2428,16 +2501,16 @@
       const d = await r.json();
       if (d.ok) {
         document.getElementById('chatInputMsg').value = '';
-        showToast('Đã mã hoá và Gửi!');
+        showToast('Đã mã hóa và gửi!');
         loadChat();
       }
     }
 
-    // ── REGISTER ──
+    // REGISTER
     async function doRegister() {
       const u = document.getElementById('regUser').value.trim();
       const p = document.getElementById('regPass').value.trim();
-      if (!u || !p) return document.getElementById('regError').textContent = 'Nhập đủ tài khoản & mật khẩu';
+      if (!u || !p) return document.getElementById('regError').textContent = 'Nhập đủ tài khoản và mật khẩu';
 
       const req = await fetch('/api/register', {
         method: 'POST',
@@ -2461,11 +2534,11 @@
       }
     }
 
-    // ── LOGIN ──
+    // LOGIN
     async function doLogin() {
       const u = document.getElementById('loginUser').value.trim();
       const p = document.getElementById('loginPass').value.trim();
-      if (!u || !p) return document.getElementById('loginError').textContent = 'Nhập đủ tài khoản & mật khẩu';
+      if (!u || !p) return document.getElementById('loginError').textContent = 'Nhập đủ tài khoản và mật khẩu';
 
       const r = await fetch('/api/login', {
         method: 'POST',
@@ -2487,11 +2560,12 @@
         const logsTabBtn = document.getElementById('logsTabBtn');
         const maskBtn = document.getElementById('btnMask');
 
-        if (decryptTabBtn) decryptTabBtn.style.display = d.role === 'Admin' ? 'inline-flex' : 'none';
-        if (maskedTabBtn) maskedTabBtn.style.display = d.role === 'Khách hàng' ? 'none' : 'inline-flex';
-        if (maskBtn) maskBtn.style.display = d.role === 'Khách hàng' ? 'none' : 'inline-flex';
-        if (statsTabBtn) statsTabBtn.style.display = d.role === 'Admin' ? 'inline-flex' : 'none';
-        if (logsTabBtn) logsTabBtn.style.display = d.role === 'Admin' ? 'inline-flex' : 'none';
+        const roleCode = getRoleCode(d.role);
+        if (decryptTabBtn) decryptTabBtn.style.display = ['admin', 'employee'].includes(roleCode) ?'inline-flex' : 'none';
+        if (maskedTabBtn) maskedTabBtn.style.display = roleCode === 'customer' ?'none' : 'inline-flex';
+        if (maskBtn) maskBtn.style.display = roleCode === 'customer' ?'none' : 'inline-flex';
+        if (statsTabBtn) statsTabBtn.style.display = roleCode === 'admin' ?'inline-flex' : 'none';
+        if (logsTabBtn) logsTabBtn.style.display = roleCode === 'admin' ?'inline-flex' : 'none';
 
         showToast('Xin chào ' + d.username, '👋');
         loadUsers();
@@ -2507,7 +2581,7 @@
       location.reload();
     }
 
-    // ── INIT ──
+    // INIT
     window.onload = () => {
       const role = localStorage.getItem('role');
       const uname = localStorage.getItem('uname');
@@ -2520,7 +2594,7 @@
         document.getElementById('loginModal').style.display = 'none';
         document.getElementById('lblUsername').textContent = uname;
         document.getElementById('lblRole').textContent = role;
-        if (role !== 'Admin') {
+        if (!['admin', 'employee'].includes(getRoleCode(role))) {
           const decryptTabBtn = document.getElementById('decryptTabBtn');
           if (decryptTabBtn) decryptTabBtn.style.display = 'none';
         }
@@ -2541,5 +2615,6 @@
 </body>
 
 </html>
+
 
 

@@ -1,15 +1,15 @@
-// ============================================================
+﻿// ============================================================
 // src/masking.js
-// Các thuật toán Data Masking TỰ VIẾT - KHÔNG dùng thư viện
+// CÃ¡c thuáº­t toÃ¡n Data Masking Tá»° VIáº¾T - KHÃ”NG dÃ¹ng thÆ° viá»‡n
 // ============================================================
 
 // ============================================================
-// PHẦN 1: TIỆN ÍCH CƠ BẢN (tự implement)
+// PHáº¦N 1: TIá»†N ÃCH CÆ  Báº¢N (tá»± implement)
 // ============================================================
 
 /**
- * Chuyển chuỗi sang mảng byte UTF-8 (tự viết, không dùng Buffer lib)
- * Mỗi ký tự ASCII = 1 byte, ký tự Unicode dùng encoding thủ công
+ * Chuyá»ƒn chuá»—i sang máº£ng byte UTF-8 (tá»± viáº¿t, khÃ´ng dÃ¹ng Buffer lib)
+ * Má»—i kÃ½ tá»± ASCII = 1 byte, kÃ½ tá»± Unicode dÃ¹ng encoding thá»§ cÃ´ng
  */
 function stringToBytes(str) {
     const bytes = [];
@@ -33,7 +33,7 @@ function stringToBytes(str) {
 }
 
 /**
- * Chuyển mảng byte UTF-8 về chuỗi (tự viết)
+ * Chuyá»ƒn máº£ng byte UTF-8 vá» chuá»—i (tá»± viáº¿t)
  */
 function bytesToString(bytes) {
     let str = '';
@@ -60,7 +60,7 @@ function bytesToString(bytes) {
 }
 
 /**
- * Chuyển số thành chuỗi HEX 2 ký tự (tự viết, không dùng toString(16))
+ * Chuyá»ƒn sá»‘ thÃ nh chuá»—i HEX 2 kÃ½ tá»± (tá»± viáº¿t, khÃ´ng dÃ¹ng toString(16))
  */
 function byteToHex(byte) {
     const HEX_CHARS = '0123456789ABCDEF';
@@ -68,7 +68,7 @@ function byteToHex(byte) {
 }
 
 /**
- * Chuyển chuỗi HEX về số (tự viết)
+ * Chuyá»ƒn chuá»—i HEX vá» sá»‘ (tá»± viáº¿t)
  */
 function hexToByte(hex) {
     const h = hex.toUpperCase();
@@ -78,7 +78,7 @@ function hexToByte(hex) {
 }
 
 /**
- * Chuyển mảng byte thành chuỗi HEX (tự viết)
+ * Chuyá»ƒn máº£ng byte thÃ nh chuá»—i HEX (tá»± viáº¿t)
  */
 function bytesToHex(bytes) {
     let hex = '';
@@ -89,7 +89,7 @@ function bytesToHex(bytes) {
 }
 
 /**
- * Chuyển chuỗi HEX về mảng byte (tự viết)
+ * Chuyá»ƒn chuá»—i HEX vá» máº£ng byte (tá»± viáº¿t)
  */
 function hexToBytes(hex) {
     const bytes = [];
@@ -100,7 +100,7 @@ function hexToBytes(hex) {
 }
 
 /**
- * Sinh số ngẫu nhiên trong khoảng [min, max) (tự viết LCG - Linear Congruential Generator)
+ * Sinh sá»‘ ngáº«u nhiÃªn trong khoáº£ng [min, max) (tá»± viáº¿t LCG - Linear Congruential Generator)
  */
 let _lcgSeed = Date.now() % 2147483647;
 function lcgRandom() {
@@ -112,13 +112,13 @@ function randInt(min, max) {
 }
 
 // ============================================================
-// PHẦN 2: STATIC MASKING (Che giấu tĩnh)
+// PHáº¦N 2: STATIC MASKING (Che giáº¥u tÄ©nh)
 // ============================================================
 
 /**
- * Static Masking cho SỐ ĐIỆN THOẠI
- * Giữ 3 số đầu và 2 số cuối, che phần giữa bằng ***
- * VD: "0912345678" → "091*****78"
+ * Static Masking cho Sá» ÄIá»†N THOáº I
+ * Giá»¯ 3 sá»‘ Ä‘áº§u vÃ  2 sá»‘ cuá»‘i, che pháº§n giá»¯a báº±ng ***
+ * VD: "0912345678" â†’ "091*****78"
  */
 function maskPhone(phone) {
     if (!phone || phone.length < 6) return '***';
@@ -137,8 +137,8 @@ function maskPhone(phone) {
 
 /**
  * Static Masking cho EMAIL
- * Che phần local, giữ ký tự đầu và domain
- * VD: "nguyenvanan@gmail.com" → "ng*******@gmail.com"
+ * Che pháº§n local, giá»¯ kÃ½ tá»± Ä‘áº§u vÃ  domain
+ * VD: "nguyenvanan@gmail.com" â†’ "ng*******@gmail.com"
  */
 function maskEmail(email) {
     if (!email || !email.includes('@')) return '***@***.***';
@@ -159,9 +159,9 @@ function maskEmail(email) {
 }
 
 /**
- * Static Masking cho HỌ TÊN
- * Giữ ký tự đầu mỗi từ, che phần còn lại
- * VD: "Nguyễn Văn An" → "N****** V** A*"
+ * Static Masking cho Há»Œ TÃŠN
+ * Giá»¯ kÃ½ tá»± Ä‘áº§u má»—i tá»«, che pháº§n cÃ²n láº¡i
+ * VD: "Nguyá»…n VÄƒn An" â†’ "N****** V** A*"
  */
 function maskName(name) {
     if (!name) return '***';
@@ -188,9 +188,9 @@ function maskName(name) {
 }
 
 /**
- * Static Masking cho ĐỊA CHỈ
- * Che toàn bộ số nhà và tên đường, giữ quận/tỉnh
- * VD: "123 Nguyễn Huệ, Q1, TP.HCM" → "***, ***, TP.HCM"
+ * Static Masking cho Äá»ŠA CHá»ˆ
+ * Che toÃ n bá»™ sá»‘ nhÃ  vÃ  tÃªn Ä‘Æ°á»ng, giá»¯ quáº­n/tá»‰nh
+ * VD: "123 Nguyá»…n Huá»‡, Q1, TP.HCM" â†’ "***, ***, TP.HCM"
  */
 function maskAddress(address) {
     if (!address) return '***';
@@ -208,7 +208,7 @@ function maskAddress(address) {
 
     const maskedParts = [];
     for (let i = 0; i < parts.length; i++) {
-        // Giữ phần tỉnh/thành phố (phần cuối)
+        // Giá»¯ pháº§n tá»‰nh/thÃ nh phá»‘ (pháº§n cuá»‘i)
         if (i === parts.length - 1) {
             maskedParts.push(parts[i]);
         } else {
@@ -219,30 +219,30 @@ function maskAddress(address) {
 }
 
 /**
- * Static Masking cho NGÀY SINH
- * Giữ năm, che tháng và ngày
- * VD: "1990-05-15" → "1990-**-**"
+ * Static Masking cho NGÃ€Y SINH
+ * Giá»¯ nÄƒm, che thÃ¡ng vÃ  ngÃ y
+ * VD: "1990-05-15" â†’ "1990-**-**"
  */
 function maskBirthDate(dateStr) {
     if (!dateStr) return '****-**-**';
     const str = typeof dateStr === 'object' ? dateStr.toISOString().substring(0, 10) : dateStr.toString().substring(0, 10);
-    // Giữ năm, ẩn tháng và ngày
+    // Giá»¯ nÄƒm, áº©n thÃ¡ng vÃ  ngÃ y
     const year = str.substring(0, 4);
     return year + '-**-**';
 }
 
 // ============================================================
-// PHẦN 3: XOR CIPHER (Mã hóa XOR tự viết)
+// PHáº¦N 3: XOR CIPHER (MÃ£ hÃ³a XOR tá»± viáº¿t)
 // ============================================================
 
 /**
- * Mở rộng key để khớp độ dài plaintext (Key Stretching đơn giản)
- * Lặp lại key và trộn với vị trí để tăng độ phức tạp
+ * Má»Ÿ rá»™ng key Ä‘á»ƒ khá»›p Ä‘á»™ dÃ i plaintext (Key Stretching Ä‘Æ¡n giáº£n)
+ * Láº·p láº¡i key vÃ  trá»™n vá»›i vá»‹ trÃ­ Ä‘á»ƒ tÄƒng Ä‘á»™ phá»©c táº¡p
  */
 function stretchKey(keyBytes, targetLen) {
     const stretched = [];
     for (let i = 0; i < targetLen; i++) {
-        // Kết hợp key byte + vị trí + byte kế tiếp để tránh pattern lặp
+        // Káº¿t há»£p key byte + vá»‹ trÃ­ + byte káº¿ tiáº¿p Ä‘á»ƒ trÃ¡nh pattern láº·p
         const k1 = keyBytes[i % keyBytes.length];
         const k2 = keyBytes[(i + 1) % keyBytes.length];
         stretched.push((k1 ^ (i & 0xFF) ^ (k2 >> 1)) & 0xFF);
@@ -251,10 +251,10 @@ function stretchKey(keyBytes, targetLen) {
 }
 
 /**
- * XOR Encrypt: text XOR key → chuỗi HEX
- * @param {string} plaintext  - Văn bản gốc
- * @param {string} key        - Khóa bí mật
- * @returns {string}          - Ciphertext dạng HEX
+ * XOR Encrypt: text XOR key â†’ chuá»—i HEX
+ * @param {string} plaintext  - VÄƒn báº£n gá»‘c
+ * @param {string} key        - KhÃ³a bÃ­ máº­t
+ * @returns {string}          - Ciphertext dáº¡ng HEX
  */
 function xorEncrypt(plaintext, key) {
     const ptBytes = stringToBytes(plaintext);
@@ -269,10 +269,10 @@ function xorEncrypt(plaintext, key) {
 }
 
 /**
- * XOR Decrypt: chuỗi HEX → text gốc
- * @param {string} cipherHex  - Ciphertext dạng HEX
- * @param {string} key        - Khóa bí mật (phải trùng với lúc mã hóa)
- * @returns {string}          - Plaintext gốc
+ * XOR Decrypt: chuá»—i HEX â†’ text gá»‘c
+ * @param {string} cipherHex  - Ciphertext dáº¡ng HEX
+ * @param {string} key        - KhÃ³a bÃ­ máº­t (pháº£i trÃ¹ng vá»›i lÃºc mÃ£ hÃ³a)
+ * @returns {string}          - Plaintext gá»‘c
  */
 function xorDecrypt(cipherHex, key) {
     const cipherBytes = hexToBytes(cipherHex);
@@ -287,10 +287,10 @@ function xorDecrypt(cipherHex, key) {
 }
 
 // ============================================================
-// PHẦN 4: AES-128 TỰ VIẾT (ECB mode)
+// PHáº¦N 4: AES-128 Tá»° VIáº¾T (ECB mode)
 // ============================================================
 
-// S-Box chuẩn AES (256 giá trị cố định theo đặc tả AES/FIPS-197)
+// S-Box chuáº©n AES (256 giÃ¡ trá»‹ cá»‘ Ä‘á»‹nh theo Ä‘áº·c táº£ AES/FIPS-197)
 const AES_SBOX = [
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
     0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -310,7 +310,7 @@ const AES_SBOX = [
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 ];
 
-// Inverse S-Box (dùng cho giải mã)
+// Inverse S-Box (dÃ¹ng cho giáº£i mÃ£)
 const AES_INV_SBOX = (function () {
     const inv = new Array(256);
     for (let i = 0; i < 256; i++) inv[AES_SBOX[i]] = i;
@@ -318,11 +318,15 @@ const AES_INV_SBOX = (function () {
 })();
 
 // Round constants cho Key Expansion
-const AES_RCON = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36];
+const AES_RCON = [
+    0x01, 0x02, 0x04, 0x08, 0x10,
+    0x20, 0x40, 0x80, 0x1b, 0x36,
+    0x6c, 0xd8, 0xab, 0x4d, 0x9a
+];
 
 /**
- * GF(2^8) multiplication - nhân trong trường Galois (phép XOR + shift)
- * Đây là phép nhân modulo đa thức bất khả quy x^8 + x^4 + x^3 + x + 1
+ * GF(2^8) multiplication - nhÃ¢n trong trÆ°á»ng Galois (phÃ©p XOR + shift)
+ * ÄÃ¢y lÃ  phÃ©p nhÃ¢n modulo Ä‘a thá»©c báº¥t kháº£ quy x^8 + x^4 + x^3 + x + 1
  */
 function gfMul(a, b) {
     let p = 0;
@@ -337,74 +341,93 @@ function gfMul(a, b) {
 }
 
 /**
- * AES Key Expansion: từ 16-byte key → 11 round keys (176 bytes)
+ * AES Key Expansion: tá»« 16-byte key â†’ 11 round keys (176 bytes)
  */
-function aesKeyExpansion(key16) {
-    const w = []; // 44 words (4 bytes each)
+function getAesConfig(keySizeBits) {
+    if (keySizeBits === 192) return { keySizeBits: 192, nk: 6, nr: 12 };
+    if (keySizeBits === 256) return { keySizeBits: 256, nk: 8, nr: 14 };
+    return { keySizeBits: 128, nk: 4, nr: 10 };
+}
 
-    // 4 words đầu = key gốc
-    for (let i = 0; i < 4; i++) {
-        w.push([key16[4 * i], key16[4 * i + 1], key16[4 * i + 2], key16[4 * i + 3]]);
+function rotateWord(word) {
+    return [word[1], word[2], word[3], word[0]];
+}
+
+function subWord(word) {
+    return word.map(b => AES_SBOX[b]);
+}
+
+function xorWords(a, b) {
+    return a.map((value, index) => value ^ b[index]);
+}
+
+function aesKeyExpansion(keyBytes, keySizeBits) {
+    const { nk, nr } = getAesConfig(keySizeBits);
+    const totalWords = 4 * (nr + 1);
+    const words = [];
+
+    for (let i = 0; i < nk; i++) {
+        words.push([
+            keyBytes[4 * i],
+            keyBytes[4 * i + 1],
+            keyBytes[4 * i + 2],
+            keyBytes[4 * i + 3]
+        ]);
     }
 
-    for (let i = 4; i < 44; i++) {
-        let temp = [...w[i - 1]];
-        if (i % 4 === 0) {
-            // RotWord: xoay trái 1 byte
-            temp = [temp[1], temp[2], temp[3], temp[0]];
-            // SubWord: áp dụng S-Box
-            temp = temp.map(b => AES_SBOX[b]);
-            // XOR với Rcon
-            temp[0] ^= AES_RCON[i / 4 - 1];
+    for (let i = nk; i < totalWords; i++) {
+        let temp = [...words[i - 1]];
+        if (i % nk === 0) {
+            temp = subWord(rotateWord(temp));
+            temp[0] ^= AES_RCON[(i / nk) - 1];
+        } else if (nk > 6 && i % nk === 4) {
+            temp = subWord(temp);
         }
-        w.push(w[i - 4].map((b, j) => b ^ temp[j]));
+        words.push(xorWords(words[i - nk], temp));
     }
 
-    // Chuyển thành 11 round keys, mỗi key 16 bytes
-    
     const roundKeys = [];
-    for (let r = 0; r < 11; r++) {
-        const rk = [];
-        for (let c = 0; c < 4; c++) {
-            for (let b = 0; b < 4; b++) rk.push(w[r * 4 + c][b]);
+    for (let round = 0; round <= nr; round++) {
+        const roundKey = [];
+        for (let column = 0; column < 4; column++) {
+            for (let byteIndex = 0; byteIndex < 4; byteIndex++) {
+                roundKey.push(words[round * 4 + column][byteIndex]);
+            }
         }
-        roundKeys.push(rk);
+        roundKeys.push(roundKey);
     }
     return roundKeys;
 }
 
-/**
- * AES SubBytes: thay thế từng byte qua S-Box
- */
 function aesSubBytes(state) {
     return state.map(b => AES_SBOX[b]);
 }
 
 /**
- * AES InvSubBytes: thay thế ngược
+ * AES InvSubBytes: thay tháº¿ ngÆ°á»£c
  */
 function aesInvSubBytes(state) {
     return state.map(b => AES_INV_SBOX[b]);
 }
 
 /**
- * AES ShiftRows: dịch vòng các hàng trong state 4x4
- * Hàng 0: không dịch, Hàng 1: dịch 1, Hàng 2: dịch 2, Hàng 3: dịch 3
+ * AES ShiftRows: dá»‹ch vÃ²ng cÃ¡c hÃ ng trong state 4x4
+ * HÃ ng 0: khÃ´ng dá»‹ch, HÃ ng 1: dá»‹ch 1, HÃ ng 2: dá»‹ch 2, HÃ ng 3: dá»‹ch 3
  */
 function aesShiftRows(state) {
     const s = [...state];
-    // Hàng 1: dịch trái 1
+    // HÃ ng 1: dá»‹ch trÃ¡i 1
     let tmp = s[1]; s[1] = s[5]; s[5] = s[9]; s[9] = s[13]; s[13] = tmp;
-    // Hàng 2: dịch trái 2
+    // HÃ ng 2: dá»‹ch trÃ¡i 2
     tmp = s[2]; s[2] = s[10]; s[10] = tmp;
     tmp = s[6]; s[6] = s[14]; s[14] = tmp;
-    // Hàng 3: dịch trái 3 (= phải 1)
+    // HÃ ng 3: dá»‹ch trÃ¡i 3 (= pháº£i 1)
     tmp = s[15]; s[15] = s[11]; s[11] = s[7]; s[7] = s[3]; s[3] = tmp;
     return s;
 }
 
 /**
- * AES InvShiftRows: dịch ngược
+ * AES InvShiftRows: dá»‹ch ngÆ°á»£c
  */
 function aesInvShiftRows(state) {
     const s = [...state];
@@ -416,7 +439,7 @@ function aesInvShiftRows(state) {
 }
 
 /**
- * AES MixColumns: trộn từng cột sử dụng phép nhân GF(2^8)
+ * AES MixColumns: trá»™n tá»«ng cá»™t sá»­ dá»¥ng phÃ©p nhÃ¢n GF(2^8)
  */
 function aesMixColumns(state) {
     const result = new Array(16);
@@ -448,39 +471,35 @@ function aesInvMixColumns(state) {
 }
 
 /**
- * AES AddRoundKey: XOR state với round key
+ * AES AddRoundKey: XOR state vá»›i round key
  */
 function aesAddRoundKey(state, roundKey) {
     return state.map((b, i) => b ^ roundKey[i]);
 }
 
 /**
- * Mã hóa 1 block 16 bytes với AES-128
+ * MÃ£ hÃ³a 1 block 16 bytes vá»›i AES-128
  */
-function aesEncryptBlock(block16, roundKeys) {
+function aesEncryptBlock(block16, roundKeys, nr) {
     let state = aesAddRoundKey([...block16], roundKeys[0]);
 
-    for (let round = 1; round <= 9; round++) {
+    for (let round = 1; round < nr; round++) {
         state = aesSubBytes(state);
         state = aesShiftRows(state);
         state = aesMixColumns(state);
         state = aesAddRoundKey(state, roundKeys[round]);
     }
-    // Round cuối không có MixColumns
     state = aesSubBytes(state);
     state = aesShiftRows(state);
-    state = aesAddRoundKey(state, roundKeys[10]);
+    state = aesAddRoundKey(state, roundKeys[nr]);
 
     return state;
 }
 
-/**
- * Giải mã 1 block 16 bytes với AES-128
- */
-function aesDecryptBlock(block16, roundKeys) {
-    let state = aesAddRoundKey([...block16], roundKeys[10]);
+function aesDecryptBlock(block16, roundKeys, nr) {
+    let state = aesAddRoundKey([...block16], roundKeys[nr]);
 
-    for (let round = 9; round >= 1; round--) {
+    for (let round = nr - 1; round >= 1; round--) {
         state = aesInvShiftRows(state);
         state = aesInvSubBytes(state);
         state = aesAddRoundKey(state, roundKeys[round]);
@@ -493,9 +512,6 @@ function aesDecryptBlock(block16, roundKeys) {
     return state;
 }
 
-/**
- * PKCS#7 Padding: thêm padding để độ dài chia hết cho 16
- */
 function pkcs7Pad(bytes) {
     const padLen = 16 - (bytes.length % 16);
     const padded = [...bytes];
@@ -504,7 +520,7 @@ function pkcs7Pad(bytes) {
 }
 
 /**
- * PKCS#7 Unpadding: loại bỏ padding
+ * PKCS#7 Unpadding: loáº¡i bá» padding
  */
 function pkcs7Unpad(bytes) {
     if (!bytes || bytes.length === 0) return bytes;
@@ -514,7 +530,7 @@ function pkcs7Unpad(bytes) {
 }
 
 /**
- * SHA-1 tự implement
+ * SHA-1 tá»± implement
  */
 function leftRotate(n, b) { return ((n << b) | (n >>> (32 - b))) >>> 0; }
 function concatBytes(a, b) {
@@ -568,7 +584,7 @@ function sha1(message) {
 }
 
 /**
- * Tự implement custom HMAC
+ * Tá»± implement custom HMAC
  * HMAC = SHA1(key + SHA1(key + data))
  */
 function hmacSha1(keyStr, dataStr) {
@@ -576,70 +592,61 @@ function hmacSha1(keyStr, dataStr) {
     const d = stringToBytes(dataStr);
     const inner = sha1(concatBytes(k, d));
     const outer = sha1(concatBytes(k, inner));
-    return bytesToHex(outer); // Trả về 40 ký tự hex
+    return bytesToHex(outer); // Tráº£ vá» 40 kÃ½ tá»± hex
 }
 
 /**
- * Chuẩn hóa key về đúng 16 bytes (AES-128)
- * Nếu key < 16 bytes: pad bằng 0
- * Nếu key > 16 bytes: lấy 16 bytes đầu
+ * Chuáº©n hÃ³a key vá» Ä‘Ãºng 16 bytes (AES-128)
+ * Náº¿u key < 16 bytes: pad báº±ng 0
+ * Náº¿u key > 16 bytes: láº¥y 16 bytes Ä‘áº§u
  */
-function normalizeKey16(keyStr) {
+function normalizeKey(keyStr, keySizeBits) {
+    const { keySizeBits: normalizedBits } = getAesConfig(keySizeBits);
     const keyBytes = stringToBytes(keyStr);
-    const key16 = new Array(16).fill(0);
-    for (let i = 0; i < 16 && i < keyBytes.length; i++) key16[i] = keyBytes[i];
-    return key16;
+    const keyLen = normalizedBits / 8;
+    const normalizedKey = new Array(keyLen).fill(0);
+    for (let i = 0; i < keyLen && i < keyBytes.length; i++) normalizedKey[i] = keyBytes[i];
+    return normalizedKey;
 }
 
-/**
- * AES-128 CBC Encrypt (tự implement + random IV)
- * Trả về: HMAC(40 hex chars) + IV(32 hex chars) + Khối mã hóa(tùy ý)
- */
-function aesEncrypt(plaintext, keyStr) {
-    const key16 = normalizeKey16(keyStr);
-    const roundKeys = aesKeyExpansion(key16);
+function aesEncryptAdvanced(plaintext, keyStr, keySizeBits) {
+    const { nr, keySizeBits: normalizedBits } = getAesConfig(keySizeBits);
+    const normalizedKey = normalizeKey(keyStr, normalizedBits);
+    const roundKeys = aesKeyExpansion(normalizedKey, normalizedBits);
     const ptBytes = pkcs7Pad(stringToBytes(plaintext));
 
     const cipherBytes = [];
-
-    // Tạo 16 byte IV ngẫu nhiên
     let iv = [];
     for (let i = 0; i < 16; i++) iv.push(randInt(0, 256));
     let prevBlock = iv;
 
-    // Ghi IV vào đầu
     for (let i = 0; i < 16; i++) cipherBytes.push(iv[i]);
 
     for (let i = 0; i < ptBytes.length; i += 16) {
         const block = ptBytes.slice(i, i + 16);
-        for (let j = 0; j < 16; j++) block[j] ^= prevBlock[j]; // CBC mode
-        const encBlock = aesEncryptBlock(block, roundKeys);
+        for (let j = 0; j < 16; j++) block[j] ^= prevBlock[j];
+        const encBlock = aesEncryptBlock(block, roundKeys, nr);
         for (const b of encBlock) cipherBytes.push(b);
         prevBlock = encBlock;
     }
     const cipherHex = bytesToHex(cipherBytes);
-    // Sinh MAC bằng cách băm chuỗi hex đã chạy IV + CipherText
     const mac = hmacSha1(keyStr, cipherHex);
     return mac + cipherHex;
 }
 
-/**
- * AES-128 CBC Decrypt (tự implement hoàn toàn) + Check integrity
- */
-function aesDecrypt(macAndCipherHex, keyStr) {
-    if (!macAndCipherHex || macAndCipherHex.length < 72) return "(Lỗi d.l. hoặc rỗng)"; // MAC=40 + IV=32
+function aesDecryptAdvanced(macAndCipherHex, keyStr, keySizeBits) {
+    if (!macAndCipherHex || macAndCipherHex.length < 72) return "(L?i d.l. ho?c r?ng)";
 
     const mac = macAndCipherHex.substring(0, 40);
     const cipherHex = macAndCipherHex.substring(40);
-
-    // Kiểm tra tính toàn vẹn (Integrity check)
     const expectedMac = hmacSha1(keyStr, cipherHex);
     if (mac !== expectedMac) {
-        return "HMAC verification failed! Dữ liệu bị giả mạo.";
+        return "HMAC verification failed! D? li?u b? gi? m?o.";
     }
 
-    const key16 = normalizeKey16(keyStr);
-    const roundKeys = aesKeyExpansion(key16);
+    const { nr, keySizeBits: normalizedBits } = getAesConfig(keySizeBits);
+    const normalizedKey = normalizeKey(keyStr, normalizedBits);
+    const roundKeys = aesKeyExpansion(normalizedKey, normalizedBits);
     const fullBytes = hexToBytes(cipherHex);
 
     const iv = fullBytes.slice(0, 16);
@@ -648,8 +655,8 @@ function aesDecrypt(macAndCipherHex, keyStr) {
 
     for (let i = 16; i < fullBytes.length; i += 16) {
         const block = fullBytes.slice(i, i + 16);
-        const decBlock = aesDecryptBlock(block, roundKeys);
-        for (let j = 0; j < 16; j++) decBlock[j] ^= prevBlock[j]; // CBC un-chain
+        const decBlock = aesDecryptBlock(block, roundKeys, nr);
+        for (let j = 0; j < 16; j++) decBlock[j] ^= prevBlock[j];
         for (const b of decBlock) ptBytes.push(b);
         prevBlock = block;
     }
@@ -658,20 +665,23 @@ function aesDecrypt(macAndCipherHex, keyStr) {
         const unpadded = pkcs7Unpad(ptBytes);
         return bytesToString(unpadded);
     } catch (e) {
-        return "(Lỗi Decrypt/Unpad)";
+        return "(L?i Decrypt/Unpad)";
     }
 }
 
-// ============================================================
-// PHẦN 5: TOKENIZATION (Thay thế bằng token ngẫu nhiên)
-// ============================================================
+function aesEncrypt(plaintext, keyStr) {
+    return aesEncryptAdvanced(plaintext, keyStr, 128);
+}
 
-// Token store lưu trong bộ nhớ (in-memory)
+function aesDecrypt(macAndCipherHex, keyStr) {
+    return aesDecryptAdvanced(macAndCipherHex, keyStr, 128);
+}
+
 const _tokenStore = {};
 
 /**
- * Sinh chuỗi token ngẫu nhiên độ dài 32 ký tự (tự viết, không dùng crypto)
- * Sử dụng LCG kết hợp timestamp để tạo entropy
+ * Sinh chuá»—i token ngáº«u nhiÃªn Ä‘á»™ dÃ i 32 kÃ½ tá»± (tá»± viáº¿t, khÃ´ng dÃ¹ng crypto)
+ * Sá»­ dá»¥ng LCG káº¿t há»£p timestamp Ä‘á»ƒ táº¡o entropy
  */
 function generateToken(prefix) {
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -685,13 +695,13 @@ function generateToken(prefix) {
 }
 
 /**
- * Tokenize: thay thế giá trị gốc bằng token ngẫu nhiên
- * @param {string} original  - Giá trị gốc
- * @param {string} fieldType - Loại trường (cccd, salary, ...)
- * @returns {string}         - Token đại diện
+ * Tokenize: thay tháº¿ giÃ¡ trá»‹ gá»‘c báº±ng token ngáº«u nhiÃªn
+ * @param {string} original  - GiÃ¡ trá»‹ gá»‘c
+ * @param {string} fieldType - Loáº¡i trÆ°á»ng (cccd, salary, ...)
+ * @returns {string}         - Token Ä‘áº¡i diá»‡n
  */
 function tokenize(original, fieldType) {
-    // Kiểm tra xem giá trị này đã có token chưa (deterministic)
+    // Kiá»ƒm tra xem giÃ¡ trá»‹ nÃ y Ä‘Ã£ cÃ³ token chÆ°a (deterministic)
     for (const tok in _tokenStore) {
         if (_tokenStore[tok].original === String(original) &&
             _tokenStore[tok].fieldType === fieldType) {
@@ -704,36 +714,36 @@ function tokenize(original, fieldType) {
 }
 
 /**
- * Detokenize: khôi phục giá trị gốc từ token
- * @param {string} token - Token cần giải
- * @returns {string}     - Giá trị gốc, hoặc null nếu không tìm thấy
+ * Detokenize: khÃ´i phá»¥c giÃ¡ trá»‹ gá»‘c tá»« token
+ * @param {string} token - Token cáº§n giáº£i
+ * @returns {string}     - GiÃ¡ trá»‹ gá»‘c, hoáº·c null náº¿u khÃ´ng tÃ¬m tháº¥y
  */
 function detokenize(token) {
     return _tokenStore[token] ? _tokenStore[token].original : null;
 }
 
 /**
- * Lấy toàn bộ token map để lưu vào database
+ * Láº¥y toÃ n bá»™ token map Ä‘á»ƒ lÆ°u vÃ o database
  */
 function getTokenMap() {
     return _tokenStore;
 }
 
 // ============================================================
-// PHẦN 6: FORMAT-PRESERVING MASKING (Giữ định dạng gốc)
+// PHáº¦N 6: FORMAT-PRESERVING MASKING (Giá»¯ Ä‘á»‹nh dáº¡ng gá»‘c)
 // ============================================================
 
 /**
- * FP Masking cho SỐ ĐIỆN THOẠI
- * Thay số thật bằng số ngẫu nhiên, giữ đúng định dạng
- * VD: "0912345678" → "0834719265" (vẫn là số ĐT hợp lệ)
+ * FP Masking cho Sá» ÄIá»†N THOáº I
+ * Thay sá»‘ tháº­t báº±ng sá»‘ ngáº«u nhiÃªn, giá»¯ Ä‘Ãºng Ä‘á»‹nh dáº¡ng
+ * VD: "0912345678" â†’ "0834719265" (váº«n lÃ  sá»‘ ÄT há»£p lá»‡)
  */
 function fpMaskPhone(phone) {
     if (!phone) return '0900000000';
     const cleaned = phone.trim();
 
     let result = cleaned[0]; // '0'
-    result += cleaned[1];     // mã mạng
+    result += cleaned[1];     // mÃ£ máº¡ng
 
     const DIGITS = '0123456789';
     for (let i = 2; i < cleaned.length; i++) {
@@ -743,9 +753,9 @@ function fpMaskPhone(phone) {
 }
 
 /**
- * FP Masking cho SỐ TIỀN LƯƠNG
- * Giữ nguyên số chữ số, thay bằng giá trị ngẫu nhiên cùng bậc
- * VD: 15000000.00 → 23847291.00 (vẫn là số 8 chữ số)
+ * FP Masking cho Sá» TIá»€N LÆ¯Æ NG
+ * Giá»¯ nguyÃªn sá»‘ chá»¯ sá»‘, thay báº±ng giÃ¡ trá»‹ ngáº«u nhiÃªn cÃ¹ng báº­c
+ * VD: 15000000.00 â†’ 23847291.00 (váº«n lÃ  sá»‘ 8 chá»¯ sá»‘)
  */
 function fpMaskSalary(salary) {
     const salaryStr = String(Math.floor(parseFloat(salary)));
@@ -762,8 +772,8 @@ function fpMaskSalary(salary) {
 
 /**
  * FP Masking cho CCCD
- * Giữ 3 số đầu (mã tỉnh), sinh 9 số còn lại
- * VD: "012345678901" → "012839471023"
+ * Giá»¯ 3 sá»‘ Ä‘áº§u (mÃ£ tá»‰nh), sinh 9 sá»‘ cÃ²n láº¡i
+ * VD: "012345678901" â†’ "012839471023"
  */
 function fpMaskCCCD(cccd) {
     if (!cccd) return '000000000000';
@@ -793,9 +803,11 @@ module.exports = {
     xorEncrypt,
     xorDecrypt,
 
-    // AES-128 (tự implement)
+    // AES (tá»± implement)
     aesEncrypt,
     aesDecrypt,
+    aesEncryptAdvanced,
+    aesDecryptAdvanced,
 
     // Tokenization
     tokenize,
@@ -807,9 +819,12 @@ module.exports = {
     fpMaskSalary,
     fpMaskCCCD,
 
-    // Utilities (export để test)
+    // Utilities (export Ä‘á»ƒ test)
     stringToBytes,
     bytesToString,
     bytesToHex,
     hexToBytes,
 };
+
+
+

@@ -16,6 +16,8 @@ CREATE TABLE users (
     salary      TEXT NOT NULL,
     birth_date  TEXT NOT NULL,
     address     TEXT NOT NULL,
+    data_cipher_mode VARCHAR(20) NOT NULL DEFAULT 'AES-128',
+    data_key_wrap TEXT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
