@@ -4,12 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Hacker Terminal - Attack E2EE</title>
-    <style>
+        <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
+        :root {
+            --bg: #f4f7fb;
+            --surface: #ffffff;
+            --surface-soft: #eef4ff;
+            --border: #d8e2f0;
+            --text: #162033;
+            --muted: #667085;
+            --accent: #2563eb;
+            --danger: #dc2626;
+            --danger-soft: #fee2e2;
+            --warn: #ca8a04;
+            --ok: #0f766e;
+            --ok-soft: #ccfbf1;
+            --mac: #be185d;
+            --iv: #0f766e;
+            --cipher: #2563eb;
+        }
+
         body {
-            background-color: #050505;
-            color: #00ff00;
+            background:
+                radial-gradient(circle at top left, #dbeafe 0%, transparent 26%),
+                radial-gradient(circle at top right, #e0f2fe 0%, transparent 22%),
+                linear-gradient(180deg, #f9fbff 0%, var(--bg) 100%);
+            color: var(--text);
             font-family: 'JetBrains Mono', monospace;
             margin: 0;
             padding: 20px;
@@ -18,38 +39,43 @@
         h1,
         h2,
         h3 {
-            color: #00ff00;
+            color: var(--text);
             text-transform: uppercase;
         }
 
         .nav {
             margin-bottom: 20px;
-            border-bottom: 1px solid #00ff00;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
         }
 
         .nav button {
-            background: #111;
-            color: #00ff00;
-            border: 1px solid #00ff00;
+            background: var(--surface);
+            color: var(--accent);
+            border: 1px solid var(--border);
             padding: 10px 20px;
             cursor: pointer;
             font-family: inherit;
             font-size: 14px;
             text-transform: uppercase;
+            border-radius: 10px 10px 0 0;
+            transition: all .2s ease;
         }
 
         .nav button:hover,
         .nav button.active {
-            background: #00ff00;
-            color: #000;
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
         }
 
         .panel {
             display: none;
             padding: 20px;
-            border: 1px solid #333;
-            background: #0a0a0a;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
         }
 
         .panel.active {
@@ -65,57 +91,59 @@
 
         th,
         td {
-            border: 1px solid #333;
+            border: 1px solid var(--border);
             padding: 10px;
             text-align: left;
             vertical-align: top;
         }
 
         th {
-            color: #fff;
-            background: #111;
+            color: var(--text);
+            background: var(--surface-soft);
         }
 
         .highlight-red {
-            color: #ff0000;
+            color: var(--danger);
             font-weight: bold;
         }
 
         .highlight-yellow {
-            color: #ffff00;
+            color: var(--warn);
         }
 
         .btn {
-            background: #330000;
-            border: 1px solid #ff0000;
-            color: #ff0000;
+            background: var(--danger-soft);
+            border: 1px solid rgba(220, 38, 38, 0.24);
+            color: var(--danger);
             padding: 5px 10px;
             cursor: pointer;
             font-family: inherit;
+            border-radius: 8px;
+            transition: all .2s ease;
         }
 
         .btn:hover {
-            background: #ff0000;
+            background: var(--danger);
             color: #fff;
         }
 
         .part-mac {
-            color: #ff00ff;
+            color: var(--mac);
             word-wrap: break-word;
         }
 
         .part-iv {
-            color: #00ffff;
+            color: var(--iv);
             word-wrap: break-word;
         }
 
         .part-cipher {
-            color: #00ff00;
+            color: var(--cipher);
             word-wrap: break-word;
         }
 
         .desc {
-            color: #888;
+            color: var(--muted);
             font-size: 13px;
             margin-bottom: 15px;
         }
@@ -124,12 +152,14 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #220000;
-            border: 1px solid #ff0000;
+            background: var(--surface);
+            border: 1px solid rgba(220, 38, 38, 0.24);
             padding: 15px;
             display: none;
-            color: #ff0000;
+            color: var(--danger);
             z-index: 1000;
+            border-radius: 12px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
         }
     </style>
 </head>
@@ -155,7 +185,7 @@
             <i>* Cột plaintext được hiển thị bí mật ở đây để đối chiếu. Hacker thực tế KHÔNG thấy.</i>
         </div>
 
-        <button class="btn" onclick="fetchSniffer()" style="background:#003300; border-color:#00ff00; color:#00ff00">Cập
+        <button class="btn" onclick="fetchSniffer()" style="background:var(--ok-soft); border-color:rgba(15,118,110,0.22); color:var(--ok)">Cập
             nhật Gói tin (Sniff)</button>
 
         <table>
@@ -186,12 +216,12 @@
             <br>Kết quả: Server KHÔNG CÓ KHÓA E2EE của Client nên giải mã thất bại hoàn toàn.
         </div>
 
-        <div style="background:#000; padding:10px; border:1px solid #333; margin-bottom:15px">
+        <div style="background:var(--surface-soft); padding:10px; border:1px solid var(--border); margin-bottom:15px; border-radius:10px">
             > SELECT id, sender, encrypted_msg FROM secure_chat; <br>
             <span class="highlight-yellow"># Executing query... Success! </span>
         </div>
 
-        <button class="btn" style="background:#003300; border-color:#00ff00; color:#00ff00" onclick="fetchBreach()">[Tải
+        <button class="btn" style="background:var(--ok-soft); border-color:rgba(15,118,110,0.22); color:var(--ok)" onclick="fetchBreach()">[Tải
             CSDL Chat]</button>
 
         <table>
@@ -257,12 +287,12 @@
               <td>[PKT_0${m.id}]</td>
               <td><span class="highlight-yellow">${m.sender}</span> ➔ <span class="highlight-yellow">${m.receiver}</span></td>
               <td style="font-size:10px; line-height:1.4">
-                <span style="color:#aaa">Hacker block:</span><br>
+                <span style="color:var(--muted)">Hacker block:</span><br>
                 HMAC: <span class="part-mac">${parsed.mac}</span><br>
                 IV_16: <span class="part-iv">${parsed.iv}</span><br>
                 Data_AES: <span class="part-cipher">${parsed.cipher}</span>
               </td>
-              <td><span style="color:#aaa;font-size:11px">Thực tế (hiện cho Demo):</span><br><b style="color:#0f0">${m.demo_plaintext || '---'}</b></td>
+              <td><span style="color:var(--muted);font-size:11px">Thực tế (hiện cho Demo):</span><br><b style="color:var(--ok)">${m.demo_plaintext || '---'}</b></td>
               <td>
                 <button class="btn" onclick="tamperPacket(${m.id})">🔪 Giả mạo gói (Alter Cipher)</button>
               </td>
@@ -303,7 +333,7 @@
               <td class="highlight-yellow">${m.sender}</td>
               <td style="font-size:10px">${m.encrypted_msg.substring(0, 60)}...</td>
               <td id="breach-res-${m.id}">
-                <button class="btn" style="color:#000;background:#aaa;border-color:#fff" onclick="hackDecrypt(${m.id}, '${m.encrypted_msg}')">Run Decrypt (Server AES_KEY)</button>
+                <button class="btn" style="color:var(--text);background:var(--surface-soft);border-color:var(--border)" onclick="hackDecrypt(${m.id}, '${m.encrypted_msg}')">Run Decrypt (Server AES_KEY)</button>
               </td>
             </tr>
           `;
@@ -324,7 +354,7 @@
 
             let resText = d.data ? d.data.decrypted : 'Error';
             setTimeout(() => {
-                el.innerHTML = `<span class="highlight-red">[THẤT BẠI]</span><br><span style="font-size:11px;color:#aaa">${resText}</span><br><br><span style="font-size:11px;color:#0ff">Lý do: Client dùng Session Key bí mật chưa bao giờ gửi lên Server.</span>`;
+                el.innerHTML = `<span class="highlight-red">[THẤT BẠI]</span><br><span style="font-size:11px;color:var(--muted)">${resText}</span><br><br><span style="font-size:11px;color:var(--accent)">Lý do: Client dùng Session Key bí mật chưa bao giờ gửi lên Server.</span>`;
             }, 1000);
         }
 
@@ -334,3 +364,4 @@
 </body>
 
 </html>
+
