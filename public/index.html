@@ -1468,7 +1468,7 @@
       return s;
     }
 
-    // â”€â”€ TABS â”€â”€
+    // TABS
     function switchTab(name) {
       document.querySelectorAll('.tab').forEach((t, i) => t.classList.remove('active'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -1484,16 +1484,16 @@
       if (name === 'logs') loadLogs();
       if (name === 'chat') {
         document.getElementById('chatInputMsg').focus();
-        window.chatMsgCount = 0; // Reset tracking cho mÃ n hÃ¬nh chat
-        document.getElementById('chatMessages').innerHTML = '<div style="text-align:center; color:var(--muted); font-size:13px; margin-top:40px">Äang Ä‘á»“ng bá»™ dá»¯ liá»‡u mÃ£ hoÃ¡...</div>';
+        window.chatMsgCount = 0;
+        document.getElementById('chatMessages').innerHTML = '<div style="text-align:center; color:var(--muted); font-size:13px; margin-top:40px">Đang đồng bộ dữ liệu mã hóa...</div>';
         loadChatUsers();
         loadChat();
-        chatInterval = setInterval(loadChat, 3000); // Tá»± Ä‘á»™ng load má»—i 3s
+        chatInterval = setInterval(loadChat, 3000);
       }
     }
 
-    // â”€â”€ TOAST â”€â”€
-    function showToast(msg, icon = 'âœ“', isError = false) {
+    // TOAST
+    function showToast(msg, icon = '✓', isError = false) {
       const t = document.getElementById('toast');
       document.getElementById('toastMsg').textContent = msg;
       document.getElementById('toastIcon').textContent = icon;
@@ -1511,7 +1511,7 @@
       return fetch(url, options);
     }
 
-    // â”€â”€ FORMAT â”€â”€
+    // FORMAT
     function fmtSalary(v) {
       if (!v) return '—';
       const n = parseFloat(v);
@@ -1522,7 +1522,7 @@
       return v.length > len ?v.substring(0, len) + '…' : v;
     }
 
-    // â”€â”€ LOAD USERS â”€â”€
+    // LOAD USERS
     async function loadUsers() {
       try {
         const role = localStorage.getItem('role') || 'Admin';
@@ -1546,13 +1546,13 @@
           return `
       <tr id="row-${u.id}" ${window.recentlyAttackedUserId === u.id ?'class="row-attacked"' : ''}>
         <td><span class="badge badge-blue">${u.id}</span></td>
-        <td><strong>${u.full_name}</strong></td>
-        <td style="color:var(--blue)">${u.email}</td>
-        <td>${u.phone}</td>
-        <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${u.cccd}</td>
+        <td><strong>${fixMojibakeText(u.full_name)}</strong></td>
+        <td style="color:var(--blue)">${fixMojibakeText(u.email)}</td>
+        <td>${fixMojibakeText(u.phone)}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${fixMojibakeText(u.cccd)}</td>
         <td style="color:var(--green)">${u.salary === '*** VNĐ' ?u.salary : fmtSalary(u.salary)}</td>
         <td>${u.birth_date ?(u.birth_date.length > 10 ?u.birth_date : u.birth_date.substring(0, 10)) : '—'}</td>
-        <td style="font-size:12px;color:var(--muted)">${u.address}</td>
+        <td style="font-size:12px;color:var(--muted)">${fixMojibakeText(u.address)}</td>
         <td>
           <div style="display:flex; gap:6px; flex-direction:column">
             ${roleCode === 'admin' ?`<button class="btn-danger-sm" onclick="deleteUser(${u.id}, '${u.full_name.replace(/'/g, '')}')">🗑️ Xóa</button>` : `<span class="badge badge-purple" style="font-size:10px">Chỉ xem</span>`}
@@ -1571,7 +1571,7 @@
       }
     }
 
-    // â”€â”€ LOAD MASKED â”€â”€
+    // LOAD MASKED
     async function loadMasked() {
       const role = localStorage.getItem('role');
       const roleCode = getRoleCode(role);
@@ -1591,13 +1591,13 @@
       body.innerHTML = d.data.map(m => `
     <tr>
       <td><span class="badge badge-blue">${m.id}</span></td>
-      <td><span class="masked-val">${m.full_name_masked}</span></td>
+      <td><span class="masked-val">${fixMojibakeText(m.full_name_masked)}</span></td>
       <td>
-        <div><span class="masked-val">${m.email_static}</span></div>
+        <div><span class="masked-val">${fixMojibakeText(m.email_static)}</span></div>
         <div class="mono" style="margin-top:2px" title="${m.email_xor}">XOR: ${shortMono(m.email_xor)}</div>
       </td>
       <td>
-        <div><span class="masked-val">${m.phone_static}</span></div>
+        <div><span class="masked-val">${fixMojibakeText(m.phone_static)}</span></div>
         <div style="font-size:11px;color:var(--blue);margin-top:2px">FP: ${m.phone_fpmasked}</div>
       </td>
       <td><span class="badge badge-purple mono" style="font-size:10px">${shortMono(m.cccd_token, 18)}</span></td>
@@ -1609,7 +1609,7 @@
     </tr>`).join('');
     }
 
-    // â”€â”€ LOAD DECRYPT TAB â”€â”€
+    // LOAD DECRYPT TAB
     async function loadDecrypt() {
       const role = localStorage.getItem('role');
       const roleCode = getRoleCode(role);
@@ -1630,7 +1630,7 @@
       container.innerHTML = d.data.map(m => `
     <div class="decrypt-row" id="dr-${m.id}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:12px;flex-wrap:wrap">
-        <strong>User ID ${m.id} — <span class="masked-val">${m.full_name_masked}</span></strong>
+        <strong>User ID ${m.id} — <span class="masked-val">${fixMojibakeText(m.full_name_masked)}</span></strong>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           ${employeeMode ?`<input type="password" id="decrypt_key_${m.id}" placeholder="Nhập key đã dùng khi mã hóa" style="min-width:220px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)">` : `<span class="badge badge-blue">Admin: server tự mở khóa</span>`}
           <button class="btn btn-success btn-sm" onclick="decryptRecord(${m.id})">🔓 Giải mã</button>
@@ -1691,7 +1691,7 @@
           // Reset form
           ['add_name', 'add_email', 'add_phone', 'add_cccd', 'add_salary', 'add_birth', 'add_address', 'add_encrypt_key'].forEach(id => document.getElementById(id).value = '');
           document.getElementById('add_aes_mode').value = 'AES-128';
-          // Cáº­p nháº­t stat
+          // Cập nhật stat
           loadUsers();
         } else {
           resultEl.innerHTML = `<div style="padding:12px;background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:8px;color:var(--red)">✗ ${d.error}</div>`;
@@ -1705,7 +1705,7 @@
       icon.textContent = '➕';
     }
 
-    // â”€â”€ DELETE USER â”€â”€
+    // DELETE USER
     async function deleteUser(id, name) {
       if (!confirm('Xóa nhân viên "' + name + '"?')) return;
       const r = await authFetch('/api/users/delete', {
@@ -1722,7 +1722,7 @@
       }
     }
 
-    // â”€â”€ SIMULATE ATTACK (HMAC TEST) â”€â”€
+    // SIMULATE ATTACK (HMAC TEST)
     async function simulateAttack(id) {
       if (!confirm('Bạn đang đóng vai Hacker can thiệp trực tiếp vào MySQL để sửa lén chuỗi mã hóa AES (thay đổi cipher text điện thoại) của user ID ' + id + '\n\nHành động này mô phỏng lỗi toàn vẹn dữ liệu (Bypass integrity).\nXác nhận tấn công?')) return;
 
@@ -1750,7 +1750,7 @@
       }
     }
 
-    // â”€â”€ RUN MASK â”€â”€
+    // RUN MASK
     async function runMask() {
       const btn = document.getElementById('btnMask');
       const icon = document.getElementById('maskBtnIcon');
@@ -1775,7 +1775,7 @@
       icon.textContent = '🔐';
     }
 
-    // â”€â”€ DECRYPT RECORD â”€â”€
+    // DECRYPT RECORD
     async function decryptRecord(id) {
       const role = localStorage.getItem('role');
       const roleCode = getRoleCode(role);
@@ -1800,19 +1800,19 @@
       <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
           <div class="row-label" style="color:var(--green)">Họ tên gốc</div>
-          <div class="row-orig">${d.data.full_name || '—'}</div>
+          <div class="row-orig">${fixMojibakeText(d.data.full_name || '—')}</div>
         </div>
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
           <div class="row-label" style="color:var(--green)">Email gốc</div>
-          <div class="row-orig">${d.data.email || '—'}</div>
+          <div class="row-orig">${fixMojibakeText(d.data.email || '—')}</div>
         </div>
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
           <div class="row-label" style="color:var(--green)">Số điện thoại</div>
-          <div class="row-orig">${d.data.phone || '—'}</div>
+          <div class="row-orig">${fixMojibakeText(d.data.phone || '—')}</div>
         </div>
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
           <div class="row-label" style="color:var(--green)">CCCD gốc</div>
-          <div class="row-orig">${d.data.cccd || '—'}</div>
+          <div class="row-orig">${fixMojibakeText(d.data.cccd || '—')}</div>
         </div>
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
           <div class="row-label" style="color:var(--green)">Lương gốc</div>
@@ -1820,11 +1820,11 @@
         </div>
         <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
           <div class="row-label" style="color:var(--green)">Ngày sinh</div>
-          <div class="row-orig">${d.data.birth_date || '—'}</div>
+          <div class="row-orig">${fixMojibakeText(d.data.birth_date || '—')}</div>
         </div>
         <div style="grid-column:1 / -1;background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:10px">
           <div class="row-label" style="color:var(--green)">Địa chỉ gốc</div>
-          <div class="row-orig">${d.data.address || '—'}</div>
+          <div class="row-orig">${fixMojibakeText(d.data.address || '—')}</div>
         </div>
       </div>`;
     }
@@ -2050,7 +2050,7 @@
             const dt = r.masked_at ?new Date(r.masked_at).toLocaleString('vi-VN') : '—';
             return `<tr>
           <td><span class="badge badge-blue">${r.id}</span></td>
-          <td><span class="masked-val">${r.full_name_masked || '—'}</span></td>
+          <td><span class="masked-val">${fixMojibakeText(r.full_name_masked || '—')}</span></td>
           <td style="font-size:11px;color:var(--muted)">${dt}</td>
         </tr>`;
           }).join('');
@@ -2116,7 +2116,7 @@
       const peer = getSelectedChatPeer();
       const label = document.getElementById('chatPeerLabel');
       const displayText = peer ?(select.selectedOptions[0] ?select.selectedOptions[0].textContent : peer) : 'Toàn bộ';
-      label.innerHTML = `Đang chat với: <strong>${displayText}</strong>`;
+      label.innerHTML = `Đang chat với: <strong>${fixMojibakeText(displayText)}</strong>`;
     }
 
     async function loadChatUsers() {
@@ -2136,7 +2136,7 @@
         d.data.forEach(u => {
           if (u.username === currentUser) return;
           const roleTag = u.role === 'Admin' ?'🛡️' : getRoleCode(u.role) === 'employee' ?'👔' : '👤';
-          options.push(`<option value="${u.username}">${roleTag} ${u.role} — ${u.username}</option>`);
+          options.push(`<option value="${u.username}">${roleTag} ${fixMojibakeText(u.role)} — ${fixMojibakeText(u.username)}</option>`);
         });
         select.innerHTML = options.join('');
 
@@ -2209,7 +2209,7 @@
 
             htmlAcc += `
                     <div style="display:flex; flex-direction:column; align-items:${align}">
-                    <div style="font-size:11px; color:var(--muted); margin-bottom:4px">${msg.sender} ➜ ${msg.receiver}</div>
+                    <div style="font-size:11px; color:var(--muted); margin-bottom:4px">${fixMojibakeText(msg.sender)} ➜ ${fixMojibakeText(msg.receiver)}</div>
                     
                     <div style="background:${bg}; padding:10px 14px; border-radius:12px; max-width:80%; position:relative;">
                         
@@ -2460,12 +2460,12 @@
     }
 
     async function encryptChatMessage(plainText, secret) {
-      // Chuyá»ƒn sang dÃ¹ng hÃ m thá»§ cÃ´ng (AES-128 CBC)
+      // Chuyển sang dùng hàm thủ công (AES-128 CBC)
       return manualAesEncrypt(plainText, secret);
     }
 
     async function decryptChatMessageText(cipherHex, secret) {
-      // Chuyá»ƒn sang dÃ¹ng hÃ m thá»§ cÃ´ng (AES-128 CBC)
+      // Chuyển sang dùng hàm thủ công (AES-128 CBC)
       return manualAesDecrypt(cipherHex, secret);
     }
 
